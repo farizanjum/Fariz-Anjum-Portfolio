@@ -68,14 +68,14 @@ This site is optimized for static hosting platforms:
 - **Pin Important Screenshots** - highlight featured content
 - **Secure Local Storage** - data persists in browser
 
-### 🎮 Admin Access
+### Admin Access
 - **Secure Authentication** - protected access method
 - **Invisible Interface** - no visible buttons for visitors
 - **Full Content Management** - upload, edit, delete, pin
 - **Batch Upload** - select multiple images at once
 - **Real-time Updates** - changes reflect immediately
 
-### 📱 Mobile Optimization
+### Mobile Optimization
 - **Bottom Navigation** on mobile devices
 - **Responsive Lightbox** for image viewing
 - **Touch-friendly** admin controls
