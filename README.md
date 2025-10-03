@@ -13,8 +13,9 @@ A clean, black and white portfolio website built for modern web hosting with an 
 - **Image Lightbox** for full-size viewing
 - **Edit & Delete** functionality for screenshots
 - **Pin Important Screenshots** feature
+- **Persistent Storage** - images visible to all visitors
 - Responsive design optimized for mobile
-- Static site - no backend required
+- Static site with serverless functions
 
 ## Tech Stack
 
@@ -22,7 +23,8 @@ A clean, black and white portfolio website built for modern web hosting with an 
 - CSS3 (Inline styles + advanced modals)
 - JavaScript (Vanilla ES6+)
 - RSS2JSON API for newsletter feed
-- Local Storage for screenshot management
+- **Cloudinary** for image hosting and optimization
+- **Vercel Serverless Functions** for API endpoints
 - Secure admin authentication
 
 ## Project Structure
@@ -32,29 +34,49 @@ fariz.tech/
 ├── index.html                    # Main portfolio page
 ├── screenshot_dump.html          # Exclusive screenshot collection
 ├── js/main.js                    # Newsletter RSS loader + smooth scrolling
-├── images/                       # Profile image and uploaded screenshots
-├── api/rss.js                    # Serverless RSS proxy for Vercel
-├── vercel.json                   # Vercel deployment config
+├── images/                       # Profile image directory
+├── api/                          # Serverless API functions
+│   ├── rss.js                    # RSS feed proxy
+│   ├── upload-screenshot.js      # Image upload to Cloudinary
+│   ├── get-screenshots.js        # Fetch screenshots data
+│   ├── update-screenshot.js      # Edit screenshot metadata
+│   └── delete-screenshot.js      # Delete screenshots
+├── data/                         # Screenshots metadata (gitignored)
+├── package.json                  # Dependencies for Vercel
 ├── _redirects                    # Netlify deployment config
 ├── favicon.ico                   # Site favicon
 ├── .gitignore                    # Git ignore rules
 └── README.md                     # Project documentation
 ```
 
-## Deployment
+## Setup & Deployment
 
-This site is optimized for static hosting platforms:
+### 1. Cloudinary Setup (Required for Screenshot Uploads)
+1. Sign up for a free [Cloudinary account](https://cloudinary.com/)
+2. Get your API credentials from the Dashboard
+3. Copy `env-example.txt` to `.env` and fill in your credentials
+4. In your Vercel/Netlify project settings, add these environment variables:
+   - `CLOUDINARY_CLOUD_NAME` - Your cloud name
+   - `CLOUDINARY_API_KEY` - Your API key
+   - `CLOUDINARY_API_SECRET` - Your API secret
 
-### Vercel (Recommended)
+### 2. Deployment
+
+This site is optimized for static hosting platforms with serverless functions:
+
+#### Vercel (Recommended)
 1. Import from GitHub
-2. Auto-deploys on push
-3. Add custom domain `fariz.tech`
-4. Serverless functions auto-detect
+2. Add Cloudinary environment variables in project settings
+3. Auto-deploys on push
+4. Add custom domain `fariz.tech`
+5. Serverless functions auto-detect and deploy
 
-### Netlify
+#### Netlify
 1. Connect GitHub repo
-2. Auto-deploys on push
-3. Add custom domain `fariz.tech`
+2. Add Cloudinary environment variables in build settings
+3. Auto-deploys on push
+4. Add custom domain `fariz.tech`
+5. Functions will be available at `/.netlify/functions/`
 
 ## Key Features
 
@@ -108,10 +130,12 @@ Then visit `http://localhost:8000`
 
 ## Security
 
-- **Zero Backend Dependencies** - everything runs client-side
-- **Local Storage Only** - no external databases needed
-- **Konami Code Protection** - obscure access method
+- **Serverless Architecture** - secure API endpoints
+- **Cloudinary Image Hosting** - reliable, scalable storage
+- **Environment Variables** - sensitive credentials protected
+- **Konami Code Protection** - obscure admin access method
 - **No Admin UI Visible** - completely invisible to visitors
+- **HTTPS Only** - secure data transmission
 
 ## License
 

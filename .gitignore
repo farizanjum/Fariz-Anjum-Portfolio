@@ -9,6 +9,7 @@ build/
 .env
 .env.local
 .env.production
+.env.example
 
 # IDE files
 .vscode/
@@ -27,3 +28,6 @@ npm-debug.log*
 # Temporary files
 *.tmp
 *.temp
+
+# Screenshots data (contains uploaded images metadata)
+data/

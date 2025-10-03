@@ -638,7 +638,7 @@
             }
         }
 
-        function uploadScreenshot(event) {
+        async function uploadScreenshot(event) {
             event.preventDefault();
 
             if (selectedFiles.length === 0) {
@@ -652,28 +652,46 @@
             let uploadedCount = 0;
             const totalFiles = selectedFiles.length;
 
-            selectedFiles.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    // Create title for each file (add number for multiple files)
-                    const title = totalFiles > 1 ? `${baseTitle} ${index + 1}` : baseTitle;
+            // Show loading state
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Uploading...';
+            submitBtn.disabled = true;
 
-                    const screenshot = {
-                        id: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Unique ID
-                        title,
-                        desc,
-                        url: e.target.result,
-                        date: new Date().toISOString(),
-                        fileName: file.name
-                    };
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                const title = totalFiles > 1 ? `${baseTitle} ${i + 1}` : baseTitle;
 
-                    // Store in localStorage (in production, upload to server)
-                    const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
-                    screenshots.push(screenshot);
-                    localStorage.setItem('screenshots', JSON.stringify(screenshots));
+                try {
+                    // Convert file to base64
+                    const base64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+
+                    // Upload to server
+                    const response = await fetch('/api/upload-screenshot', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            image: base64,
+                            title: title,
+                            description: desc,
+                        }),
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.error || 'Upload failed');
+                    }
 
                     // Add to grid
-                    addScreenshotToGrid(screenshot);
+                    addScreenshotToGrid(result.screenshot);
 
                     uploadedCount++;
 
@@ -681,19 +699,26 @@
                     const emptyState = document.querySelector('.empty-state');
                     if (emptyState) emptyState.style.display = 'none';
 
-                    // Show success message when all files are uploaded
-                    if (uploadedCount === totalFiles) {
-                        alert(`${totalFiles} screenshot${totalFiles > 1 ? 's' : ''} added successfully!`);
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    alert(`Failed to upload ${file.name}: ${error.message}`);
+                }
+            }
 
-                        // Reset form
-                        event.target.reset();
-                        imagePreview.style.display = 'none';
-                        dragDropArea.querySelector('.drag-drop-text').textContent = '📸 Drag & Drop Images Here';
-                        selectedFiles = [];
-                    }
-                };
-                reader.readAsDataURL(file);
-            });
+            // Show success message
+            if (uploadedCount > 0) {
+                alert(`${uploadedCount} screenshot${uploadedCount > 1 ? 's' : ''} uploaded successfully!`);
+
+                // Reset form
+                event.target.reset();
+                imagePreview.style.display = 'none';
+                dragDropArea.querySelector('.drag-drop-text').textContent = '📸 Drag & Drop Images Here';
+                selectedFiles = [];
+            }
+
+            // Reset button
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
         }
 
         function addScreenshotToGrid(screenshot) {
@@ -701,41 +726,56 @@
             const item = document.createElement('div');
             item.className = 'screenshot-item' + (screenshot.pinned ? ' pinned' : '');
             item.setAttribute('data-id', screenshot.id);
+
+            // Escape quotes in title and description for onclick handlers
+            const escapedTitle = screenshot.title.replace(/'/g, "\\'");
+            const escapedDesc = (screenshot.description || screenshot.desc || '').replace(/'/g, "\\'");
+
             item.innerHTML = `
                 <button class="delete-btn" onclick="deleteScreenshot('${screenshot.id}')" title="Delete screenshot">×</button>
                 <button class="edit-btn" onclick="editScreenshot('${screenshot.id}')" title="Edit screenshot">✏️</button>
                 <button class="pin-btn" onclick="togglePin('${screenshot.id}')" title="Pin/Unpin screenshot">${screenshot.pinned ? '📌' : '📍'}</button>
-                <img src="${screenshot.url}" alt="${screenshot.title}" class="screenshot-img" onclick="openLightbox('${screenshot.url}', '${screenshot.title}', '${screenshot.desc}')" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <img src="${screenshot.thumbnail || screenshot.url}" alt="${screenshot.title}" class="screenshot-img" onclick="openLightbox('${screenshot.url}', '${escapedTitle}', '${escapedDesc}')" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <div style="width: 100%; height: 200px; background: #222; display: none; align-items: center; justify-content: center; color: #666;">
                     📸 ${screenshot.title}
                 </div>
                 <div class="screenshot-info">
                     <div class="screenshot-title">${screenshot.title}</div>
-                    <div class="screenshot-desc">${screenshot.desc}</div>
+                    <div class="screenshot-desc">${screenshot.description || screenshot.desc || ''}</div>
                 </div>
             `;
             grid.appendChild(item);
         }
 
-        function deleteScreenshot(id) {
+        async function deleteScreenshot(id) {
             if (!confirm('Are you sure you want to delete this screenshot?')) return;
 
-            // Remove from localStorage
-            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
-            const filtered = screenshots.filter(s => s.id !== id);
-            localStorage.setItem('screenshots', JSON.stringify(filtered));
+            try {
+                const response = await fetch(`/api/delete-screenshot?id=${id}`, {
+                    method: 'DELETE',
+                });
 
-            // Remove from DOM
-            const item = document.querySelector(`[data-id="${id}"]`);
-            if (item) item.remove();
+                const result = await response.json();
 
-            // Show empty state if no screenshots left
-            const grid = document.getElementById('screenshots-grid');
-            if (grid.children.length === 1 && grid.querySelector('.empty-state')) {
-                grid.querySelector('.empty-state').style.display = 'block';
+                if (!response.ok) {
+                    throw new Error(result.error || 'Delete failed');
+                }
+
+                // Remove from DOM
+                const item = document.querySelector(`[data-id="${id}"]`);
+                if (item) item.remove();
+
+                // Show empty state if no screenshots left
+                const grid = document.getElementById('screenshots-grid');
+                if (grid.children.length === 1 && grid.querySelector('.empty-state')) {
+                    grid.querySelector('.empty-state').style.display = 'block';
+                }
+
+                alert('Screenshot deleted successfully!');
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert(`Failed to delete screenshot: ${error.message}`);
             }
-
-            alert('Screenshot deleted successfully!');
         }
 
         // Lightbox functionality
@@ -779,21 +819,31 @@
             }
         }
 
-        function saveEdit(event) {
+        async function saveEdit(event) {
             event.preventDefault();
 
             const id = document.getElementById('edit-screenshot-id').value;
             const newTitle = document.getElementById('edit-title').value;
             const newDesc = document.getElementById('edit-desc').value;
 
-            // Update in localStorage
-            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
-            const index = screenshots.findIndex(s => s.id === id);
+            try {
+                const response = await fetch('/api/update-screenshot', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        title: newTitle,
+                        description: newDesc,
+                    }),
+                });
 
-            if (index !== -1) {
-                screenshots[index].title = newTitle;
-                screenshots[index].desc = newDesc;
-                localStorage.setItem('screenshots', JSON.stringify(screenshots));
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Update failed');
+                }
 
                 // Update the DOM
                 const item = document.querySelector(`[data-id="${id}"]`);
@@ -804,6 +854,9 @@
 
                 closeEditModal();
                 alert('Screenshot updated successfully!');
+            } catch (error) {
+                console.error('Update error:', error);
+                alert(`Failed to update screenshot: ${error.message}`);
             }
         }
 
@@ -812,19 +865,34 @@
         }
 
         // Pin functionality
-        function togglePin(id) {
-            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
-            const index = screenshots.findIndex(s => s.id === id);
+        async function togglePin(id) {
+            try {
+                // Get current state to determine new state
+                const item = document.querySelector(`[data-id="${id}"]`);
+                const currentlyPinned = item.classList.contains('pinned');
+                const newPinnedState = !currentlyPinned;
 
-            if (index !== -1) {
-                screenshots[index].pinned = !screenshots[index].pinned;
-                localStorage.setItem('screenshots', JSON.stringify(screenshots));
+                const response = await fetch('/api/update-screenshot', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        pinned: newPinnedState,
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Pin update failed');
+                }
 
                 // Update the DOM
-                const item = document.querySelector(`[data-id="${id}"]`);
                 const pinBtn = item.querySelector('.pin-btn');
 
-                if (screenshots[index].pinned) {
+                if (newPinnedState) {
                     item.classList.add('pinned');
                     pinBtn.textContent = '📌';
                     pinBtn.title = 'Unpin screenshot';
@@ -834,32 +902,34 @@
                     pinBtn.title = 'Pin screenshot';
                 }
 
-                alert(screenshots[index].pinned ? 'Screenshot pinned!' : 'Screenshot unpinned!');
+                alert(newPinnedState ? 'Screenshot pinned!' : 'Screenshot unpinned!');
+            } catch (error) {
+                console.error('Pin error:', error);
+                alert(`Failed to update pin status: ${error.message}`);
             }
         }
 
         // Load saved screenshots on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/api/get-screenshots');
+                const result = await response.json();
 
-            // Add IDs and pinned status to existing screenshots if they don't have them
-            const updatedScreenshots = screenshots.map(screenshot => ({
-                ...screenshot,
-                id: screenshot.id || Date.now().toString() + Math.random().toString(36).substr(2, 9),
-                pinned: screenshot.pinned || false
-            }));
+                if (response.ok && result.success) {
+                    const screenshots = result.screenshots || [];
 
-            // Save back if any IDs or pinned status were added
-            if (updatedScreenshots.some((s, i) => s.id !== screenshots[i]?.id || s.pinned !== screenshots[i]?.pinned)) {
-                localStorage.setItem('screenshots', JSON.stringify(updatedScreenshots));
-            }
+                    screenshots.forEach(addScreenshotToGrid);
 
-            updatedScreenshots.forEach(addScreenshotToGrid);
-
-            // Hide empty state if there are screenshots
-            if (updatedScreenshots.length > 0) {
-                const emptyState = document.querySelector('.empty-state');
-                if (emptyState) emptyState.style.display = 'none';
+                    // Hide empty state if there are screenshots
+                    if (screenshots.length > 0) {
+                        const emptyState = document.querySelector('.empty-state');
+                        if (emptyState) emptyState.style.display = 'none';
+                    }
+                } else {
+                    console.error('Failed to load screenshots:', result.error);
+                }
+            } catch (error) {
+                console.error('Error loading screenshots:', error);
             }
         });
     </script>
