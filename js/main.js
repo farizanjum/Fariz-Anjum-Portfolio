@@ -5,7 +5,10 @@ async function loadNewsletterFeed() {
 
     try {
         const response = await fetch('/api/rss');
-        if (!response.ok) throw new Error('RSS fetch failed');
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(`RSS fetch failed (${response.status}): ${errorData.error || 'Unknown error'}`);
+        }
         const xmlText = await response.text();
 
         const parser = new DOMParser();
@@ -31,7 +34,7 @@ async function loadNewsletterFeed() {
         displayNewsletterItems(items);
     } catch (error) {
         console.error('Error loading newsletter feed:', error);
-        feedContainer.innerHTML = '<div class="text" style="text-align: center; opacity: 0.7;">Unable to load newsletter feed at this time.</div>';
+        feedContainer.innerHTML = `<div class="text" style="text-align: center; opacity: 0.7;">Unable to load newsletter feed: ${error.message}</div>`;
     }
 }
 
