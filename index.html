@@ -117,7 +117,95 @@
             .nav-sidebar {
                 display: none; /* Hide on mobile for cleaner look */
             }
+
+            /* Mobile optimizations */
+            body {
+                padding: 30px 20px; /* More padding on mobile */
+                line-height: 1.7; /* Better line height */
+            }
+
+            .container {
+                max-width: 100%; /* Full width on mobile */
+            }
+
+            .header {
+                flex-direction: column; /* Stack image and text vertically */
+                gap: 25px; /* More gap between image and text */
+                margin-bottom: 50px; /* More bottom margin */
+                text-align: center; /* Center align header text */
+            }
+
+            .profile-img {
+                width: 150px; /* Smaller image on mobile */
+                height: auto;
+            }
+
+            .header-content {
+                text-align: left; /* Keep text left-aligned */
+                max-width: 100%; /* Full width */
+            }
+
+            .h1 {
+                font-size: 2.2rem; /* Slightly smaller title on mobile */
+                margin-bottom: 25px;
+                line-height: 1.2;
+            }
+
+            .text {
+                margin-bottom: 20px; /* More spacing between paragraphs */
+                font-size: 1.1rem; /* Slightly larger font for readability */
+            }
+
+            .h2 {
+                font-size: 1.8rem; /* Adjust section headers */
+                margin-top: 50px; /* More top margin for sections */
+                margin-bottom: 25px; /* More bottom margin */
+            }
+
+            .h3 {
+                font-size: 1.4rem;
+                margin-top: 35px;
+                margin-bottom: 20px;
+            }
+
+            .bullet-list {
+                margin-left: 15px; /* Less indent on mobile */
+                margin-bottom: 20px;
+            }
+
+            .bullet-item {
+                margin-bottom: 12px; /* More space between bullets */
+                line-height: 1.6;
+            }
+
+            .numbered-list {
+                margin-left: 15px;
+                margin-bottom: 20px;
+            }
+
+            .numbered-item {
+                margin-bottom: 15px;
+                line-height: 1.6;
+                font-size: 1.05rem;
+            }
+
+            .blog-feed {
+                padding: 20px; /* More padding */
+            }
+
+            .blog-item {
+                margin-bottom: 18px;
+                padding-bottom: 12px;
+            }
+
+            /* Better spacing for social links */
+            .text:last-child {
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid #333; /* Subtle separator */
+            }
         }
+
         .blog-feed {
             margin-top: 20px;
             max-height: 400px;
@@ -246,7 +334,7 @@
                     </div>
                 </div>
 
-        <div id="projects" class="h2">Projects (GitHub Selected)</div>
+        <div id="projects" class="h2">Projects</div>
 
         <div class="numbered-list">
             <div class="numbered-item">1. <a href="https://github.com/farizanjum/fixtral">Fixtral</a> AI-powered Photoshop Assistant. <span class="scroll-link" onclick="window.open('https://fixtral.vercel.app', '_blank')">Try Now!</span></div>
