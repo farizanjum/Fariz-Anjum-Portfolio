@@ -90,6 +90,43 @@
             }
         }
 
+        /* Desktop Navigation Sidebar */
+        .nav-sidebar {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 8px;
+            padding: 15px 10px;
+            display: none; /* Hidden by default, shown on desktop via media query */
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (min-width: 769px) {
+            .nav-sidebar {
+                display: flex !important;
+            }
+        }
+
         @media (max-width: 768px) {
 
             /* Mobile Navigation */
@@ -246,6 +283,15 @@
     </style>
 </head>
 <body>
+
+    <!-- Navigation Sidebar -->
+    <nav class="nav-sidebar">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#blogs" class="nav-link">Newsletter</a>
+        <a href="#projects" class="nav-link">Projects</a>
+        <a href="#screenshots" class="nav-link">Screenshots</a>
+        <a href="#social" class="nav-link">Social</a>
+    </nav>
 
     <!-- Mobile Navigation -->
     <nav class="mobile-nav">
