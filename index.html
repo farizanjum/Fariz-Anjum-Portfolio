@@ -82,41 +82,8 @@
             text-decoration: underline;
         }
 
-        /* Navigation Sidebar */
-        .nav-sidebar {
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #000;
-            border: 1px solid #fff;
-            border-radius: 8px;
-            padding: 15px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .nav-link {
-            color: #fff;
-            text-decoration: none;
-            font-size: 14px;
-            padding: 8px 12px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-            text-align: center;
-            min-width: 70px;
-        }
-
-        .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
 
         @media (max-width: 768px) {
-            .nav-sidebar {
-                display: none; /* Hide desktop sidebar on mobile */
-            }
 
             /* Mobile Navigation */
             .mobile-nav {
@@ -272,21 +239,13 @@
     </style>
 </head>
 <body>
-    <!-- Navigation Sidebar -->
-    <nav class="nav-sidebar">
-        <a href="#about" class="nav-link">About</a>
-        <a href="#blogs" class="nav-link">Newsletter</a>
-        <a href="#projects" class="nav-link">Projects</a>
-        <a href="#screenshots" class="nav-link">Screenshots</a>
-        <a href="#social" class="nav-link">Social</a>
-    </nav>
 
     <!-- Mobile Navigation -->
     <nav class="mobile-nav">
         <a href="#about" class="mobile-nav-link">About</a>
         <a href="#blogs" class="mobile-nav-link">Newsletter</a>
         <a href="#projects" class="mobile-nav-link">Projects</a>
-        <a href="#screenshots" class="mobile-nav-link">Screenshots</a>
+        <a href="screenshot_dump.html" class="mobile-nav-link">Screenshots</a>
         <a href="#social" class="mobile-nav-link">Social</a>
     </nav>
 
@@ -406,44 +365,6 @@
         <div class="blog-feed" id="newsletter-feed">
             <div class="text" style="text-align: center; opacity: 0.7;">Loading newsletters...</div>
             </div>
-
-        <div id="screenshots" class="h2">Screenshot Dump</div>
-
-        <div class="text" style="margin-bottom: 20px;">
-            <div style="background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-                <div style="text-align: center; margin-bottom: 15px;">
-                    <strong style="color: #ff6b6b;">⚠️ NSFW WARNING ⚠️</strong>
-                </div>
-                <div style="text-align: center; color: #ccc; font-size: 0.9em; line-height: 1.5;">
-                    This section may contain screenshots of art, tweets, memes, and other interesting content.<br>
-                    Some material may be intended for mature audiences only.<br>
-                    <strong>Enter at your own discretion.</strong>
-                </div>
-                <div style="text-align: center; margin-top: 15px;">
-                    <button onclick="showScreenshots()" style="background: #333; color: #fff; border: 1px solid #fff; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Enter Screenshot Dump</button>
-                </div>
-            </div>
-
-            <div id="screenshot-content" style="display: none;">
-                <div style="text-align: center; color: #ccc; margin: 40px 0;">
-                    <div style="font-size: 1.2em; margin-bottom: 10px;">📸 Screenshot Collection</div>
-                    <div>Screenshots of art, cool tweets, memes, and interesting finds.</div>
-                    <div style="margin-top: 20px; opacity: 0.7;">
-                        (Content will be added here - art, tweets, memes, interesting screenshots)
-                    </div>
-                </div>
-
-                <!-- Private Upload Panel (only visible to admin) -->
-                <div id="upload-panel" style="display: none; background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-top: 20px;">
-                    <div style="text-align: center; color: #ff6b6b; margin-bottom: 15px;">
-                        🔒 Private Upload Panel
-                    </div>
-                    <div style="text-align: center; color: #ccc; font-size: 0.9em;">
-                        Upload panel for adding new screenshots (admin only)
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div id="social" class="h2">Socials & Contact</div>
         <div class="text">
