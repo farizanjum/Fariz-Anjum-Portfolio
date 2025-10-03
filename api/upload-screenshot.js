@@ -22,18 +22,36 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('Upload request received');
+    console.log('Cloudinary config:', {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'NOT SET',
+      api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'NOT SET',
+      api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'NOT SET'
+    });
+
     const { image, title, description } = req.body;
 
     if (!image) {
+      console.log('No image provided in request');
       return res.status(400).json({ error: 'No image provided' });
     }
 
+    console.log('Image data length:', image.length);
+    console.log('Image starts with:', image.substring(0, 50));
+
     // Upload to Cloudinary
+    console.log('Attempting Cloudinary upload...');
     const result = await cloudinary.uploader.upload(image, {
       folder: 'portfolio-screenshots',
       public_id: `screenshot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       resource_type: 'image',
+      // Allow data URLs and handle different formats
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+      // Optimize for web
+      quality: 'auto',
+      format: 'auto',
     });
+    console.log('Cloudinary upload successful:', result.public_id);
 
     // Store metadata (you could use a database here, but for now we'll use a simple approach)
     const screenshotData = {
@@ -82,9 +100,12 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Upload error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       error: 'Failed to upload image',
       details: error.message,
+      code: error.http_code,
+      type: error.name,
     });
   }
 }
