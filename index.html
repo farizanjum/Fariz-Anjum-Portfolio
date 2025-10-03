@@ -115,12 +115,42 @@
 
         @media (max-width: 768px) {
             .nav-sidebar {
-                display: none; /* Hide on mobile for cleaner look */
+                display: none; /* Hide desktop sidebar on mobile */
+            }
+
+            /* Mobile Navigation */
+            .mobile-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #000;
+                border-top: 1px solid #fff;
+                padding: 12px 0;
+                display: flex;
+                justify-content: space-around;
+                z-index: 1000;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+            }
+
+            .mobile-nav-link {
+                color: #fff;
+                text-decoration: none;
+                font-size: 11px;
+                text-align: center;
+                padding: 6px 8px;
+                border-radius: 6px;
+                transition: background-color 0.3s ease;
+                min-width: 50px;
+            }
+
+            .mobile-nav-link:hover {
+                background-color: rgba(255, 255, 255, 0.1);
             }
 
             /* Mobile optimizations */
             body {
-                padding: 30px 20px; /* More padding on mobile */
+                padding: 30px 20px 100px; /* More padding on mobile, extra bottom for nav */
                 line-height: 1.7; /* Better line height */
             }
 
@@ -180,13 +210,14 @@
 
             .numbered-list {
                 margin-left: 15px;
-                margin-bottom: 20px;
+                margin-bottom: 25px; /* More space after lists */
             }
 
             .numbered-item {
-                margin-bottom: 15px;
+                margin-bottom: 18px; /* More space between items */
                 line-height: 1.6;
                 font-size: 1.05rem;
+                padding-bottom: 8px; /* Extra breathing room */
             }
 
             .blog-feed {
@@ -246,7 +277,17 @@
         <a href="#about" class="nav-link">About</a>
         <a href="#blogs" class="nav-link">Newsletter</a>
         <a href="#projects" class="nav-link">Projects</a>
+        <a href="#screenshots" class="nav-link">Screenshots</a>
         <a href="#social" class="nav-link">Social</a>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <a href="#about" class="mobile-nav-link">About</a>
+        <a href="#blogs" class="mobile-nav-link">Newsletter</a>
+        <a href="#projects" class="mobile-nav-link">Projects</a>
+        <a href="#screenshots" class="mobile-nav-link">Screenshots</a>
+        <a href="#social" class="mobile-nav-link">Social</a>
     </nav>
 
     <div class="container">
@@ -337,10 +378,10 @@
         <div id="projects" class="h2">Projects</div>
 
         <div class="numbered-list">
-            <div class="numbered-item">1. <a href="https://github.com/farizanjum/fixtral">Fixtral</a> AI-powered Photoshop Assistant. <span class="scroll-link" onclick="window.open('https://fixtral.vercel.app', '_blank')">Try Now!</span></div>
+            <div class="numbered-item">1. <a href="https://github.com/farizanjum/fixtral">Fixtral</a> AI-powered Photoshop Assistant. <span class="scroll-link" onclick="window.open('https://fixtral.vercel.app', '_blank')" style="font-size: 1.1em;"><strong>Try Now!</strong></span></div>
             <div class="numbered-item">2. <a href="https://github.com/farizanjum/pixepay_ads_generator">Pixelpay Ads Generator</a> Facebook Ads scraper + AI ad creator.</div>
             <div class="numbered-item">3. <a href="https://github.com/farizanjum/Refract">Refract</a> AI video editor for Reels/Shorts.</div>
-            <div class="numbered-item">4. <a href="https://github.com/farizanjum/Althist-What_if_History_Changes">Althist</a> Alternate history generator. <span class="scroll-link" onclick="window.open('https://althist.vercel.app', '_blank')">Try Now</span></div>
+            <div class="numbered-item">4. <a href="https://github.com/farizanjum/Althist-What_if_History_Changes">Althist</a> Alternate history generator. <span class="scroll-link" onclick="window.open('https://althist.vercel.app', '_blank')" style="font-size: 1.1em;"><strong>Try Now!</strong></span></div>
             <div class="numbered-item">5. <a href="https://github.com/farizanjum/ugc-scripts-spillter-veo3">UGC Script → Video</a> UGC script splitter for Veo 3.</div>
             <div class="numbered-item">6. <a href="https://github.com/farizanjum/AI-Research-Paper-Agent">AI Research Paper Agent</a> Automated research digest.</div>
             <div class="numbered-item pointer">7. <a href="https://github.com/farizanjum/Link-2-text">Link-2-text</a> Article → WhatsApp text converter. <span class="scroll-link" onclick="window.open('https://link-2-text.onrender.com', '_blank')" style="font-size: 1.1em;"><strong>Try Now!</strong></span></div>
@@ -365,6 +406,44 @@
         <div class="blog-feed" id="newsletter-feed">
             <div class="text" style="text-align: center; opacity: 0.7;">Loading newsletters...</div>
             </div>
+
+        <div id="screenshots" class="h2">Screenshot Dump</div>
+
+        <div class="text" style="margin-bottom: 20px;">
+            <div style="background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <strong style="color: #ff6b6b;">⚠️ NSFW WARNING ⚠️</strong>
+                </div>
+                <div style="text-align: center; color: #ccc; font-size: 0.9em; line-height: 1.5;">
+                    This section may contain screenshots of art, tweets, memes, and other interesting content.<br>
+                    Some material may be intended for mature audiences only.<br>
+                    <strong>Enter at your own discretion.</strong>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button onclick="showScreenshots()" style="background: #333; color: #fff; border: 1px solid #fff; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Enter Screenshot Dump</button>
+                </div>
+            </div>
+
+            <div id="screenshot-content" style="display: none;">
+                <div style="text-align: center; color: #ccc; margin: 40px 0;">
+                    <div style="font-size: 1.2em; margin-bottom: 10px;">📸 Screenshot Collection</div>
+                    <div>Screenshots of art, cool tweets, memes, and interesting finds.</div>
+                    <div style="margin-top: 20px; opacity: 0.7;">
+                        (Content will be added here - art, tweets, memes, interesting screenshots)
+                    </div>
+                </div>
+
+                <!-- Private Upload Panel (only visible to admin) -->
+                <div id="upload-panel" style="display: none; background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                    <div style="text-align: center; color: #ff6b6b; margin-bottom: 15px;">
+                        🔒 Private Upload Panel
+                    </div>
+                    <div style="text-align: center; color: #ccc; font-size: 0.9em;">
+                        Upload panel for adding new screenshots (admin only)
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div id="social" class="h2">Socials & Contact</div>
         <div class="text">

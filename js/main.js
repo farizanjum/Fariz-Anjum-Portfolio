@@ -81,4 +81,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Screenshot dump functions
+    window.showScreenshots = function() {
+        const content = document.getElementById('screenshot-content');
+        content.style.display = 'block';
+        content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // Admin access for upload panel (basic auth check - can be enhanced)
+    window.showUploadPanel = function() {
+        const password = prompt('Enter admin password:');
+        if (password === 'admin123') { // Change this to a secure method
+            document.getElementById('upload-panel').style.display = 'block';
+        } else {
+            alert('Access denied');
+        }
+    };
+
 });
