@@ -205,7 +205,7 @@
             display: none;
             z-index: 10;
         }
-        .screenshot-item:hover .delete-btn {
+        .admin-active .delete-btn {
             display: block;
         }
         .admin-mobile-btn {
@@ -342,7 +342,7 @@
                     </div>
                     <div class="form-group">
                         <div id="drag-drop-area" class="drag-drop-area">
-                            <div class="drag-drop-text">📸 Drag & Drop Image Here</div>
+                            <div class="drag-drop-text">📸 Drag & Drop Images Here</div>
                             <div class="drag-drop-subtext">or click to select file</div>
                             <input type="file" id="image-file" accept="image/*" style="display: none;">
                         </div>
@@ -363,7 +363,7 @@
     <script>
         let isAdmin = false;
         let adminSequence = [];
-        const adminCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+        const adminCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyS', 'KeyE', 'KeyX'];
 
         function enterScreenshotDump() {
             document.getElementById('warning-overlay').style.display = 'none';
@@ -374,7 +374,7 @@
             window.location.href = 'index.html';
         }
 
-        // Secret key combination to access admin panel (Konami code: ↑↑↓↓←→←→BA)
+        // Secret key combination to access admin panel (Konami code: ↑↑↓↓←→←→SEX)
         document.addEventListener('keydown', function(e) {
             adminSequence.push(e.code);
             if (adminSequence.length > adminCode.length) {
@@ -389,7 +389,9 @@
 
         function showAdminPanel() {
             const panel = document.getElementById('upload-panel');
+            const grid = document.getElementById('screenshots-grid');
             panel.style.display = 'block';
+            grid.classList.add('admin-active');
             panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
             isAdmin = true;
         }
@@ -400,16 +402,19 @@
         const imagePreview = document.getElementById('image-preview');
         const previewImg = document.getElementById('preview-img');
 
-        let selectedFile = null;
+        let selectedFiles = [];
 
-        // Click to select file
+        // Make file input accept multiple files
+        imageFileInput.setAttribute('multiple', '');
+
+        // Click to select files
         dragDropArea.addEventListener('click', () => {
             imageFileInput.click();
         });
 
         // File input change
         imageFileInput.addEventListener('change', (e) => {
-            handleFile(e.target.files[0]);
+            handleFiles(Array.from(e.target.files));
         });
 
         // Drag over
@@ -427,72 +432,93 @@
         dragDropArea.addEventListener('drop', (e) => {
             e.preventDefault();
             dragDropArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
         });
 
-        function handleFile(file) {
-            if (file && file.type.startsWith('image/')) {
-                selectedFile = file;
+        function handleFiles(files) {
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+
+            if (imageFiles.length === 0) {
+                alert('Please select valid image files.');
+                return;
+            }
+
+            selectedFiles = imageFiles;
+            const fileCount = imageFiles.length;
+
+            if (fileCount === 1) {
+                // Show preview for single file
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     previewImg.src = e.target.result;
                     imagePreview.style.display = 'block';
-                    dragDropArea.querySelector('.drag-drop-text').textContent = '✅ Image Selected';
+                    dragDropArea.querySelector('.drag-drop-text').textContent = '✅ 1 Image Selected';
                 };
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(imageFiles[0]);
             } else {
-                alert('Please select a valid image file.');
+                // Hide preview for multiple files
+                imagePreview.style.display = 'none';
+                dragDropArea.querySelector('.drag-drop-text').textContent = `✅ ${fileCount} Images Selected`;
             }
         }
 
         function uploadScreenshot(event) {
             event.preventDefault();
 
-            if (!selectedFile) {
-                alert('Please select an image file.');
+            if (selectedFiles.length === 0) {
+                alert('Please select image files.');
                 return;
             }
 
-            const title = document.getElementById('screenshot-title').value || 'Untitled';
+            const baseTitle = document.getElementById('screenshot-title').value || 'Untitled';
             const desc = document.getElementById('screenshot-desc').value || '';
 
-            // Convert file to data URL for storage
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const screenshot = {
-                    id: Date.now().toString(), // Add unique ID for deletion
-                    title,
-                    desc,
-                    url: e.target.result,
-                    date: new Date().toISOString(),
-                    fileName: selectedFile.name
+            let uploadedCount = 0;
+            const totalFiles = selectedFiles.length;
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Create title for each file (add number for multiple files)
+                    const title = totalFiles > 1 ? `${baseTitle} ${index + 1}` : baseTitle;
+
+                    const screenshot = {
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Unique ID
+                        title,
+                        desc,
+                        url: e.target.result,
+                        date: new Date().toISOString(),
+                        fileName: file.name
+                    };
+
+                    // Store in localStorage (in production, upload to server)
+                    const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
+                    screenshots.push(screenshot);
+                    localStorage.setItem('screenshots', JSON.stringify(screenshots));
+
+                    // Add to grid
+                    addScreenshotToGrid(screenshot);
+
+                    uploadedCount++;
+
+                    // Hide empty state if this is the first screenshot
+                    const emptyState = document.querySelector('.empty-state');
+                    if (emptyState) emptyState.style.display = 'none';
+
+                    // Show success message when all files are uploaded
+                    if (uploadedCount === totalFiles) {
+                        alert(`${totalFiles} screenshot${totalFiles > 1 ? 's' : ''} added successfully!`);
+
+                        // Reset form
+                        event.target.reset();
+                        imagePreview.style.display = 'none';
+                        dragDropArea.querySelector('.drag-drop-text').textContent = '📸 Drag & Drop Images Here';
+                        selectedFiles = [];
+                    }
                 };
-
-                // Store in localStorage (in production, upload to server)
-                const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
-                screenshots.push(screenshot);
-                localStorage.setItem('screenshots', JSON.stringify(screenshots));
-
-                // Add to grid
-                addScreenshotToGrid(screenshot);
-
-                // Hide empty state if this is the first screenshot
-                const emptyState = document.querySelector('.empty-state');
-                if (emptyState) emptyState.style.display = 'none';
-
-                // Reset form
-                event.target.reset();
-                imagePreview.style.display = 'none';
-                dragDropArea.querySelector('.drag-drop-text').textContent = '📸 Drag & Drop Image Here';
-                selectedFile = null;
-
-                alert('Screenshot added successfully!');
-            };
-
-            reader.readAsDataURL(selectedFile);
+                reader.readAsDataURL(file);
+            });
         }
 
         function addScreenshotToGrid(screenshot) {
