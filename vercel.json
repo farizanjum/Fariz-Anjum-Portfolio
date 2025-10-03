@@ -2,8 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build"
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -15,6 +15,5 @@
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ],
-  "outputDirectory": "."
+  ]
 }
