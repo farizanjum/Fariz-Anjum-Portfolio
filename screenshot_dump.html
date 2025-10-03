@@ -99,39 +99,54 @@
         }
         .screenshots-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
             margin-bottom: 40px;
         }
         .screenshot-item {
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 8px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            transition: opacity 0.3s ease;
         }
         .screenshot-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            opacity: 0.8;
         }
         .screenshot-img {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
             display: block;
+            border-radius: 0;
         }
         .screenshot-info {
-            padding: 15px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            border-radius: 0;
+        }
+        .screenshot-item:hover .screenshot-info {
+            transform: translateY(0);
         }
         .screenshot-title {
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #fff;
+            font-size: 0.9rem;
         }
         .screenshot-desc {
             color: #ccc;
-            font-size: 0.9rem;
-            line-height: 1.4;
+            font-size: 0.8rem;
+            line-height: 1.3;
+            display: none; /* Hide description by default for cleaner look */
         }
         .upload-panel {
             background: #111;
@@ -140,6 +155,7 @@
             padding: 25px;
             margin-top: 40px;
             text-align: center;
+            display: none; /* Completely hidden by default */
         }
         .upload-title {
             color: #ff6b6b;
@@ -174,6 +190,28 @@
             outline: none;
             border-color: #ff6b6b;
         }
+        .drag-drop-area {
+            border: 2px dashed #666;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+            cursor: pointer;
+        }
+        .drag-drop-area:hover,
+        .drag-drop-area.dragover {
+            border-color: #ff6b6b;
+        }
+        .drag-drop-text {
+            color: #ccc;
+            font-size: 1rem;
+        }
+        .drag-drop-subtext {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
         .upload-btn {
             background: #ff6b6b;
             color: white;
@@ -201,23 +239,6 @@
             color: #fff;
             border-color: #666;
         }
-        .admin-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
-        }
-        .admin-toggle:hover {
-            opacity: 1;
-        }
         @media (max-width: 768px) {
             body {
                 padding: 15px;
@@ -237,8 +258,6 @@
     </style>
 </head>
 <body>
-    <!-- Admin Toggle Button -->
-    <button class="admin-toggle" onclick="toggleAdminPanel()">🔧 Admin</button>
 
     <!-- NSFW Warning Overlay -->
     <div id="warning-overlay" class="warning-overlay">
@@ -260,7 +279,7 @@
     <div id="main-content" class="main-content">
         <div class="container">
             <div class="header">
-                <div class="h1">📸 Screenshot Dump</div>
+                <div class="h1">Screenshot Dump</div>
                 <div class="subtitle">Collection of art, cool tweets, memes, and interesting finds</div>
             </div>
 
@@ -308,8 +327,14 @@
                         <textarea id="screenshot-desc" class="form-input" rows="3" required></textarea>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Image URL:</label>
-                        <input type="url" id="screenshot-url" class="form-input" placeholder="https://example.com/image.jpg" required>
+                        <div id="drag-drop-area" class="drag-drop-area">
+                            <div class="drag-drop-text">📸 Drag & Drop Image Here</div>
+                            <div class="drag-drop-subtext">or click to select file</div>
+                            <input type="file" id="image-file" accept="image/*" style="display: none;">
+                        </div>
+                        <div id="image-preview" style="margin-top: 10px; display: none;">
+                            <img id="preview-img" style="max-width: 100%; max-height: 200px; border-radius: 4px;">
+                        </div>
                     </div>
                     <button type="submit" class="upload-btn">Add Screenshot</button>
                 </form>
@@ -323,6 +348,8 @@
 
     <script>
         let isAdmin = false;
+        let adminSequence = [];
+        const adminCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 
         function enterScreenshotDump() {
             document.getElementById('warning-overlay').style.display = 'none';
@@ -333,19 +360,77 @@
             window.location.href = 'index.html';
         }
 
-        function toggleAdminPanel() {
+        // Secret key combination to access admin panel (Konami code style)
+        document.addEventListener('keydown', function(e) {
+            adminSequence.push(e.code);
+            if (adminSequence.length > adminCode.length) {
+                adminSequence.shift();
+            }
+
+            if (JSON.stringify(adminSequence) === JSON.stringify(adminCode)) {
+                showAdminPanel();
+                adminSequence = []; // Reset sequence
+            }
+        });
+
+        function showAdminPanel() {
             const panel = document.getElementById('upload-panel');
-            if (!isAdmin) {
-                const password = prompt('Enter admin password:');
-                if (password === 'admin123') { // Change this to a secure password
-                    isAdmin = true;
-                    panel.style.display = 'block';
-                    alert('Admin panel unlocked!');
-                } else {
-                    alert('Access denied');
-                }
+            panel.style.display = 'block';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            isAdmin = true;
+        }
+
+        // Drag and Drop functionality
+        const dragDropArea = document.getElementById('drag-drop-area');
+        const imageFileInput = document.getElementById('image-file');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+
+        let selectedFile = null;
+
+        // Click to select file
+        dragDropArea.addEventListener('click', () => {
+            imageFileInput.click();
+        });
+
+        // File input change
+        imageFileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        // Drag over
+        dragDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragDropArea.classList.add('dragover');
+        });
+
+        // Drag leave
+        dragDropArea.addEventListener('dragleave', (e) => {
+            dragDropArea.classList.remove('dragover');
+        });
+
+        // Drop
+        dragDropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragDropArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    dragDropArea.querySelector('.drag-drop-text').textContent = '✅ Image Selected';
+                };
+                reader.readAsDataURL(file);
             } else {
-                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                alert('Please select a valid image file.');
             }
         }
 
@@ -354,20 +439,43 @@
 
             const title = document.getElementById('screenshot-title').value;
             const desc = document.getElementById('screenshot-desc').value;
-            const url = document.getElementById('screenshot-url').value;
 
-            // For now, just add to local storage (in production, this would save to a database)
-            const screenshot = { title, desc, url, date: new Date().toISOString() };
-            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
-            screenshots.push(screenshot);
-            localStorage.setItem('screenshots', JSON.stringify(screenshots));
+            if (!selectedFile && !title) {
+                alert('Please select an image file and enter a title.');
+                return;
+            }
 
-            // Add to grid
-            addScreenshotToGrid(screenshot);
+            // Convert file to data URL for storage
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const screenshot = {
+                    title,
+                    desc,
+                    url: e.target.result,
+                    date: new Date().toISOString(),
+                    fileName: selectedFile.name
+                };
 
-            // Clear form
-            event.target.reset();
-            alert('Screenshot added successfully!');
+                // Store in localStorage (in production, upload to server)
+                const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
+                screenshots.push(screenshot);
+                localStorage.setItem('screenshots', JSON.stringify(screenshots));
+
+                // Add to grid
+                addScreenshotToGrid(screenshot);
+
+                // Reset form
+                event.target.reset();
+                imagePreview.style.display = 'none';
+                dragDropArea.querySelector('.drag-drop-text').textContent = '📸 Drag & Drop Image Here';
+                selectedFile = null;
+
+                alert('Screenshot added successfully!');
+            };
+
+            if (selectedFile) {
+                reader.readAsDataURL(selectedFile);
+            }
         }
 
         function addScreenshotToGrid(screenshot) {
