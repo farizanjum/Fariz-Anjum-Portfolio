@@ -50,10 +50,25 @@ export default async function handler(req, res) {
     console.log('New context:', contextUpdates);
 
     // Update the resource context in Cloudinary using explicit method
-    await cloudinary.uploader.explicit(id, {
-      type: 'upload',
-      context: contextUpdates,
-    });
+    console.log('Updating Cloudinary with context:', contextUpdates);
+    try {
+      const updateResult = await cloudinary.uploader.explicit(id, {
+        type: 'upload',
+        context: contextUpdates,
+      });
+      console.log('Cloudinary update result:', updateResult);
+    } catch (explicitError) {
+      console.log('Explicit method failed, trying update method:', explicitError.message);
+      // Fallback to update method
+      await cloudinary.api.update(id, {
+        context: contextUpdates,
+      });
+      console.log('Used update method as fallback');
+    }
+
+    // Verify the update by fetching the resource
+    const verifyResource = await cloudinary.api.resource(id, { context: true });
+    console.log('Verified context after update:', verifyResource.context);
 
     console.log('Screenshot metadata updated successfully');
 
