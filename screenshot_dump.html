@@ -114,17 +114,19 @@
             transition: transform 0.3s ease, opacity 0.3s ease;
             flex: 0 0 auto;
             align-self: flex-start;
+            width: 450px;
         }
         .screenshot-item:hover {
             transform: scale(1.02);
             opacity: 0.9;
         }
         .screenshot-img {
-            width: auto;
+            width: 100%;
             height: auto;
-            max-width: 500px;
+            max-width: 450px;
             min-width: 200px;
-            max-height: 600px;
+            max-height: 550px;
+            min-height: 180px;
             object-fit: contain;
             display: block;
             border-radius: 0;
@@ -418,10 +420,14 @@
             .screenshots-grid {
                 gap: 15px;
             }
+            .screenshot-item {
+                width: 90vw;
+                max-width: 350px;
+            }
             .screenshot-img {
-                max-width: 90vw;
-                min-width: 150px;
-                max-height: 400px;
+                width: 100%;
+                max-height: 300px;
+                min-height: 120px;
             }
             .h1 {
                 font-size: 2rem;
