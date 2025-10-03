@@ -1,54 +1,22 @@
-// RSS Feed functionality for newsletter (no RSS URL exposed in DOM)
+// RSS Feed functionality via serverless proxy
 async function loadNewsletterFeed() {
     const feedContainer = document.getElementById('newsletter-feed');
-
-    // Show loading state
     feedContainer.innerHTML = '<div class="text" style="text-align: center; opacity: 0.7;">Loading newsletter...</div>';
 
-    const rssUrl = 'https://rss.beehiiv.com/feeds/DbPIw9AbTv.xml';
-
     try {
-        // Try multiple CORS proxies in case one fails
-        const proxies = [
-            'https://api.rss2json.com/v1/api.json?rss_url=',
-            'https://cors-anywhere.herokuapp.com/https://api.rss2json.com/v1/api.json?rss_url='
-        ];
+        const response = await fetch('/api/rss');
+        if (!response.ok) throw new Error('RSS fetch failed');
+        const xmlText = await response.text();
 
-        let data = null;
-        let lastError = null;
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+        const items = Array.from(xmlDoc.querySelectorAll('item')).slice(0, 5).map((item) => ({
+            title: item.querySelector('title')?.textContent || 'Untitled',
+            link: item.querySelector('link')?.textContent || '#',
+            pubDate: item.querySelector('pubDate')?.textContent || ''
+        }));
 
-        for (const proxyBase of proxies) {
-            try {
-                const proxyUrl = proxyBase + encodeURIComponent(rssUrl);
-                const response = await fetch(proxyUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                data = await response.json();
-
-                if (data && data.status === 'ok') {
-                    displayNewsletterItems(data.items.slice(0, 5)); // Show latest 5 newsletters
-                    return;
-                } else {
-                    throw new Error('Invalid response format');
-                }
-            } catch (error) {
-                lastError = error;
-                console.warn(`Proxy ${proxyBase} failed:`, error);
-                continue;
-            }
-        }
-
-        // If all proxies failed, show error
-        throw lastError || new Error('All proxies failed');
-
+        displayNewsletterItems(items);
     } catch (error) {
         console.error('Error loading newsletter feed:', error);
         feedContainer.innerHTML = '<div class="text" style="text-align: center; opacity: 0.7;">Unable to load newsletter feed at this time.</div>';
