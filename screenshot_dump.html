@@ -98,12 +98,11 @@
             font-size: 1.1rem;
         }
         .screenshots-grid {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 25px;
             margin-bottom: 40px;
-            justify-content: flex-start;
-            align-items: flex-start;
+            justify-items: center;
         }
         .screenshot-item {
             background: transparent;
@@ -112,9 +111,8 @@
             overflow: hidden;
             position: relative;
             transition: transform 0.3s ease, opacity 0.3s ease;
-            flex: 0 0 auto;
-            align-self: flex-start;
-            width: 450px;
+            width: 100%;
+            max-width: 450px;
         }
         .screenshot-item:hover {
             transform: scale(1.02);
@@ -133,9 +131,21 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
         .screenshot-info {
-            margin-top: 10px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 50px 15px 15px 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
             text-align: center;
-            padding: 0 10px;
+            border-radius: 0;
+        }
+        .screenshot-item:hover .screenshot-info {
+            opacity: 1;
+            transform: translateY(0);
         }
         .screenshot-title {
             font-weight: bold;
@@ -149,7 +159,6 @@
             font-size: 0.8rem;
             line-height: 1.3;
             word-break: break-word;
-            display: none; /* Hide description by default for cleaner look */
         }
         .upload-panel {
             background: #111;
@@ -418,10 +427,10 @@
                 padding: 25px;
             }
             .screenshots-grid {
-                gap: 15px;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
             }
             .screenshot-item {
-                width: 90vw;
                 max-width: 350px;
             }
             .screenshot-img {
@@ -760,8 +769,8 @@
                 <button class="pin-btn" onclick="togglePin('${screenshot.id}')" title="Pin/Unpin screenshot">${screenshot.pinned ? '📌' : '📍'}</button>
                 <img src="${screenshot.url}" alt="${screenshot.title}" class="screenshot-img" onclick="openLightbox('${screenshot.url}', '${escapedTitle}', '${escapedDesc}')" onerror="this.style.display='none';">
                 <div class="screenshot-info">
-                    ${screenshot.title && screenshot.title !== 'Untitled' ? `<div class="screenshot-title">${screenshot.title}</div>` : ''}
-                    ${screenshot.description && screenshot.description !== '' ? `<div class="screenshot-desc">${screenshot.description}</div>` : ''}
+                    <div class="screenshot-title">${screenshot.title || 'Untitled'}</div>
+                    ${screenshot.description ? `<div class="screenshot-desc">${screenshot.description}</div>` : ''}
                 </div>
             `;
             grid.appendChild(item);
