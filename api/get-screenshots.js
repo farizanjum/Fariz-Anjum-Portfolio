@@ -36,13 +36,13 @@ export default async function handler(req, res) {
     // Convert Cloudinary resources to our screenshot format
     const screenshots = result.resources.map(resource => ({
       id: resource.public_id,
-      title: resource.context?.custom?.title || 'Untitled',
-      description: resource.context?.custom?.description || '',
+      title: resource.context?.title || 'Untitled',
+      description: resource.context?.description || '',
       url: resource.secure_url,
       thumbnail: resource.secure_url.replace('/upload/', '/upload/w_400,h_300,c_fill/'),
       date: resource.created_at,
       cloudinary_id: resource.public_id,
-      pinned: resource.context?.custom?.pinned === 'true' || false,
+      pinned: resource.context?.pinned === 'true' || false,
     }));
 
     // Sort screenshots: pinned first, then by date (newest first)

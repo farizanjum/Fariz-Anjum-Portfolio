@@ -8,12 +8,13 @@ A clean, black and white portfolio website built for modern web hosting with an 
 - Tor-compatible fonts
 - RSS feed integration for newsletter
 - **Screenshot Dump Section** with NSFW content warning
-- **Admin Panel** with secure access protection
-- **Drag & Drop** multi-image upload
+- **Admin Panel** with secure access protection (Konami code: ↑↑↓↓←→←→SEX)
+- **Drag & Drop** multi-image upload to Cloudinary
 - **Image Lightbox** for full-size viewing
-- **Edit & Delete** functionality for screenshots
-- **Pin Important Screenshots** feature
-- **Persistent Storage** - images visible to all visitors
+- **Edit Title & Description** after upload
+- **Delete Screenshots** from Cloudinary
+- **Pin Important Screenshots** with persistent state
+- **Persistent Storage** - all data stored in Cloudinary
 - Responsive design optimized for mobile
 - Static site with serverless functions
 
@@ -41,7 +42,7 @@ fariz.tech/
 │   ├── get-screenshots.js        # Fetch screenshots data
 │   ├── update-screenshot.js      # Edit screenshot metadata
 │   └── delete-screenshot.js      # Delete screenshots
-├── data/                         # Screenshots metadata (gitignored)
+├── data/                         # Unused (metadata now stored in Cloudinary)
 ├── package.json                  # Dependencies for Vercel
 ├── _redirects                    # Netlify deployment config
 ├── favicon.ico                   # Site favicon
@@ -131,12 +132,13 @@ Then visit `http://localhost:8000`
 
 ## Security
 
-- **Serverless Architecture** - secure API endpoints
-- **Cloudinary Image Hosting** - reliable, scalable storage
+- **Serverless Architecture** - secure API endpoints with CORS
+- **Cloudinary Image Hosting** - reliable, scalable storage with metadata
 - **Environment Variables** - sensitive credentials protected
-- **Konami Code Protection** - obscure admin access method
+- **Konami Code Protection** - obscure admin access (↑↑↓↓←→←→SEX)
 - **No Admin UI Visible** - completely invisible to visitors
 - **HTTPS Only** - secure data transmission
+- **Read-Only File System** - serverless environment security
 
 ## License
 

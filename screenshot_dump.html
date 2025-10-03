@@ -538,6 +538,7 @@
     <script>
         let isAdmin = false;
         let adminSequence = [];
+        let currentScreenshots = []; // Global screenshots array
         const adminCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyS', 'KeyE', 'KeyX'];
 
         function enterScreenshotDump() {
@@ -761,15 +762,14 @@
                     throw new Error(result.error || 'Delete failed');
                 }
 
-                // Remove from DOM
-                const item = document.querySelector(`[data-id="${id}"]`);
-                if (item) item.remove();
-
-                // Show empty state if no screenshots left
-                const grid = document.getElementById('screenshots-grid');
-                if (grid.children.length === 1 && grid.querySelector('.empty-state')) {
-                    grid.querySelector('.empty-state').style.display = 'block';
+                // Remove from currentScreenshots array
+                const screenshotIndex = currentScreenshots.findIndex(s => s.id === id);
+                if (screenshotIndex !== -1) {
+                    currentScreenshots.splice(screenshotIndex, 1);
                 }
+
+                // Refresh the grid
+                refreshScreenshotsGrid();
 
                 alert('Screenshot deleted successfully!');
             } catch (error) {
@@ -807,13 +807,12 @@
 
         // Edit functionality
         function editScreenshot(id) {
-            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
-            const screenshot = screenshots.find(s => s.id === id);
+            const screenshot = currentScreenshots.find(s => s.id === id);
 
             if (screenshot) {
                 document.getElementById('edit-screenshot-id').value = id;
                 document.getElementById('edit-title').value = screenshot.title;
-                document.getElementById('edit-desc').value = screenshot.desc || '';
+                document.getElementById('edit-desc').value = screenshot.description || '';
 
                 document.getElementById('edit-modal').classList.add('active');
             }
@@ -845,12 +844,15 @@
                     throw new Error(result.error || 'Update failed');
                 }
 
-                // Update the DOM
-                const item = document.querySelector(`[data-id="${id}"]`);
-                if (item) {
-                    item.querySelector('.screenshot-title').textContent = newTitle;
-                    item.querySelector('.screenshot-desc').textContent = newDesc;
+                // Update the currentScreenshots array
+                const screenshotIndex = currentScreenshots.findIndex(s => s.id === id);
+                if (screenshotIndex !== -1) {
+                    currentScreenshots[screenshotIndex].title = newTitle;
+                    currentScreenshots[screenshotIndex].description = newDesc;
                 }
+
+                // Refresh the grid
+                refreshScreenshotsGrid();
 
                 closeEditModal();
                 alert('Screenshot updated successfully!');
@@ -889,23 +891,47 @@
                     throw new Error(result.error || 'Pin update failed');
                 }
 
-                // Update the DOM
-                const pinBtn = item.querySelector('.pin-btn');
-
-                if (newPinnedState) {
-                    item.classList.add('pinned');
-                    pinBtn.textContent = '📌';
-                    pinBtn.title = 'Unpin screenshot';
-                } else {
-                    item.classList.remove('pinned');
-                    pinBtn.textContent = '📍';
-                    pinBtn.title = 'Pin screenshot';
+                // Update the currentScreenshots array
+                const screenshotIndex = currentScreenshots.findIndex(s => s.id === id);
+                if (screenshotIndex !== -1) {
+                    currentScreenshots[screenshotIndex].pinned = newPinnedState;
                 }
+
+                // Refresh the grid to apply sorting
+                refreshScreenshotsGrid();
 
                 alert(newPinnedState ? 'Screenshot pinned!' : 'Screenshot unpinned!');
             } catch (error) {
                 console.error('Pin error:', error);
                 alert(`Failed to update pin status: ${error.message}`);
+            }
+        }
+
+        // Refresh the screenshots grid
+        function refreshScreenshotsGrid() {
+            const grid = document.getElementById('screenshots-grid');
+            if (!grid) return;
+
+            // Clear the grid
+            grid.innerHTML = '';
+
+            // Sort screenshots: pinned first, then by date (newest first)
+            const sortedScreenshots = [...currentScreenshots].sort((a, b) => {
+                // Pinned items first
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+
+                // Then by date
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            // Re-add all screenshots
+            sortedScreenshots.forEach(addScreenshotToGrid);
+
+            // Hide empty state if there are screenshots
+            if (currentScreenshots.length > 0) {
+                const emptyState = document.querySelector('.empty-state');
+                if (emptyState) emptyState.style.display = 'none';
             }
         }
 
@@ -916,12 +942,12 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    const screenshots = result.screenshots || [];
+                    currentScreenshots = result.screenshots || [];
 
-                    screenshots.forEach(addScreenshotToGrid);
+                    currentScreenshots.forEach(addScreenshotToGrid);
 
                     // Hide empty state if there are screenshots
-                    if (screenshots.length > 0) {
+                    if (currentScreenshots.length > 0) {
                         const emptyState = document.querySelector('.empty-state');
                         if (emptyState) emptyState.style.display = 'none';
                     }
