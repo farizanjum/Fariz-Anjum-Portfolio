@@ -30,14 +30,28 @@ export default async function handler(req, res) {
 
     console.log('Updating screenshot metadata in Cloudinary:', id);
 
-    // Build context updates object
-    const contextUpdates = {};
+    // First, get the current resource to preserve existing context
+    const currentResource = await cloudinary.api.resource(id, {
+      context: true,
+    });
+
+    console.log('Current context:', currentResource.context);
+
+    // Build merged context object
+    const currentContext = currentResource.context || {};
+    const contextUpdates = {
+      ...currentContext,
+    };
+
     if (title !== undefined) contextUpdates.title = title;
     if (description !== undefined) contextUpdates.description = description;
     if (pinned !== undefined) contextUpdates.pinned = pinned.toString();
 
-    // Update the resource context in Cloudinary
-    await cloudinary.api.update(id, {
+    console.log('New context:', contextUpdates);
+
+    // Update the resource context in Cloudinary using explicit method
+    await cloudinary.uploader.explicit(id, {
+      type: 'upload',
       context: contextUpdates,
     });
 

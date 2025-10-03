@@ -11,9 +11,10 @@ A clean, black and white portfolio website built for modern web hosting with an 
 - **Admin Panel** with secure access protection (Konami code: ↑↑↓↓←→←→SEX)
 - **Drag & Drop** multi-image upload to Cloudinary
 - **Image Lightbox** for full-size viewing
-- **Edit Title & Description** after upload
+- **Edit Title & Description** after upload (emoji support ✨)
 - **Delete Screenshots** from Cloudinary
 - **Pin Important Screenshots** with persistent state
+- **Raw Image Gallery** - scattered, organic layout
 - **Persistent Storage** - all data stored in Cloudinary
 - Responsive design optimized for mobile
 - Static site with serverless functions
@@ -84,13 +85,15 @@ This site is optimized for static hosting platforms with serverless functions:
 
 ### 📸 Screenshot Dump
 - **NSFW Warning** popup before entry
+- **Raw Image Gallery** - scattered, organic layout ✨
 - **Lightbox Viewer** - click any image to view full-size
-- **Admin Panel** - secure access protection
-- **Drag & Drop Upload** - multiple images at once
+- **Admin Panel** - secure access protection (Konami code)
+- **Drag & Drop Upload** - multiple images at once to Cloudinary
+- **Emoji Titles** - add emojis to image titles 🎨📸
 - **Edit Titles & Descriptions** - modify existing screenshots
-- **Delete Screenshots** - remove unwanted content
+- **Delete Screenshots** - remove from Cloudinary
 - **Pin Important Screenshots** - highlight featured content
-- **Secure Local Storage** - data persists in browser
+- **Persistent Cloud Storage** - data survives deployments
 
 ### Admin Access
 - **Secure Authentication** - protected access method
