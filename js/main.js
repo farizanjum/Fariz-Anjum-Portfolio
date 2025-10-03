@@ -1,22 +1,57 @@
 // RSS Feed functionality for newsletter (no RSS URL exposed in DOM)
 async function loadNewsletterFeed() {
     const feedContainer = document.getElementById('newsletter-feed');
+
+    // Show loading state
+    feedContainer.innerHTML = '<div class="text" style="text-align: center; opacity: 0.7;">Loading newsletter...</div>';
+
     const rssUrl = 'https://rss.beehiiv.com/feeds/DbPIw9AbTv.xml';
 
     try {
-        // Using a CORS proxy to fetch RSS feed
-        const proxyUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl);
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
+        // Try multiple CORS proxies in case one fails
+        const proxies = [
+            'https://api.rss2json.com/v1/api.json?rss_url=',
+            'https://cors-anywhere.herokuapp.com/https://api.rss2json.com/v1/api.json?rss_url='
+        ];
 
-        if (data.status === 'ok') {
-            displayNewsletterItems(data.items.slice(0, 5)); // Show latest 5 newsletters
-        } else {
-            throw new Error('Failed to load RSS feed');
+        let data = null;
+        let lastError = null;
+
+        for (const proxyBase of proxies) {
+            try {
+                const proxyUrl = proxyBase + encodeURIComponent(rssUrl);
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                data = await response.json();
+
+                if (data && data.status === 'ok') {
+                    displayNewsletterItems(data.items.slice(0, 5)); // Show latest 5 newsletters
+                    return;
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (error) {
+                lastError = error;
+                console.warn(`Proxy ${proxyBase} failed:`, error);
+                continue;
+            }
         }
+
+        // If all proxies failed, show error
+        throw lastError || new Error('All proxies failed');
+
     } catch (error) {
         console.error('Error loading newsletter feed:', error);
-        feedContainer.innerHTML = '<div class="text" style="text-align: center; opacity: 0.7;">Unable to load newsletter feed.</div>';
+        feedContainer.innerHTML = '<div class="text" style="text-align: center; opacity: 0.7;">Unable to load newsletter feed at this time.</div>';
     }
 }
 
@@ -46,84 +81,24 @@ function displayNewsletterItems(items) {
     feedContainer.innerHTML = newsletterHtml;
 }
 
-// Mobile menu toggle functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Load newsletter RSS feed
     loadNewsletterFeed();
 
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    mobileMenuBtn.addEventListener('click', function() {
-        mobileMenu.classList.toggle('hidden');
-    });
-
-    // Close mobile menu when clicking on a link
-    const mobileLinks = mobileMenu.querySelectorAll('a');
-    mobileLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            mobileMenu.classList.add('hidden');
-        });
-    });
-
-    // Smooth scrolling for anchor links
+    // Smooth scrolling for anchor links (including navigation)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const targetId = this.getAttribute('href');
+            const target = document.querySelector(targetId);
             if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
+                const offsetTop = target.offsetTop - 20; // Add small offset
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
                 });
             }
         });
     });
 
-    // Add scroll effect to navigation
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 100) {
-            nav.classList.add('shadow-lg');
-        } else {
-            nav.classList.remove('shadow-lg');
-        }
-    });
-
-    // Add animation to project cards on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-
-    // Initially hide project cards and observe them
-    const projectCards = document.querySelectorAll('#projects .bg-white');
-    projectCards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(card);
-    });
-
-    // Add hover effects to skill cards
-    const skillCards = document.querySelectorAll('#skills .bg-white');
-    skillCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-            this.style.transition = 'transform 0.3s ease';
-        });
-
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
 });
