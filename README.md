@@ -54,11 +54,12 @@ fariz.tech/
 ### 1. Cloudinary Setup (Required for Screenshot Uploads)
 1. Sign up for a free [Cloudinary account](https://cloudinary.com/)
 2. Get your API credentials from the Dashboard
-3. Copy `env-example.txt` to `.env` and fill in your credentials
-4. In your Vercel/Netlify project settings, add these environment variables:
-   - `CLOUDINARY_CLOUD_NAME` - Your cloud name
-   - `CLOUDINARY_API_KEY` - Your API key
-   - `CLOUDINARY_API_SECRET` - Your API secret
+3. **In Vercel Project Settings → Environment Variables**, add these values:
+   - `CLOUDINARY_CLOUD_NAME=dtbjsqor8`
+   - `CLOUDINARY_API_KEY=284467649752296`
+   - `CLOUDINARY_API_SECRET=t-7AfaxN4XMxXavA7bVv68Tt-Ro`
+
+**⚠️ IMPORTANT:** These are your actual credentials - add them to Vercel environment variables for screenshot uploads to work!
 
 ### 2. Deployment
 
