@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     console.log('Image data length:', image.length);
     console.log('Image starts with:', image.substring(0, 50));
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary with context metadata
     console.log('Attempting Cloudinary upload...');
     const result = await cloudinary.uploader.upload(image, {
       folder: 'portfolio-screenshots',
@@ -50,10 +50,17 @@ export default async function handler(req, res) {
       // Optimize for web
       quality: 'auto',
       format: 'auto',
+      // Store metadata in context
+      context: {
+        title: title || 'Untitled',
+        description: description || '',
+        date: new Date().toISOString(),
+        pinned: 'false',
+      },
     });
     console.log('Cloudinary upload successful:', result.public_id);
 
-    // Store metadata (you could use a database here, but for now we'll use a simple approach)
+    // Prepare screenshot data from upload result
     const screenshotData = {
       id: result.public_id,
       title: title || 'Untitled',
@@ -62,36 +69,10 @@ export default async function handler(req, res) {
       thumbnail: result.secure_url.replace('/upload/', '/upload/w_400,h_300,c_fill/'),
       date: new Date().toISOString(),
       cloudinary_id: result.public_id,
+      pinned: false,
     };
 
-    // For now, we'll store metadata in a simple JSON file approach
-    // In production, you'd want to use a proper database
-    const fs = require('fs');
-    const path = require('path');
-
-    const dataFile = path.join(process.cwd(), 'data', 'screenshots.json');
-
-    // Ensure data directory exists
-    if (!fs.existsSync(path.join(process.cwd(), 'data'))) {
-      fs.mkdirSync(path.join(process.cwd(), 'data'));
-    }
-
-    // Read existing data
-    let screenshots = [];
-    if (fs.existsSync(dataFile)) {
-      try {
-        screenshots = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
-      } catch (e) {
-        // If file is corrupted, start fresh
-        screenshots = [];
-      }
-    }
-
-    // Add new screenshot
-    screenshots.push(screenshotData);
-
-    // Write back to file
-    fs.writeFileSync(dataFile, JSON.stringify(screenshots, null, 2));
+    console.log('Screenshot data prepared successfully');
 
     res.status(200).json({
       success: true,

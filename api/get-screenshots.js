@@ -1,5 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -16,19 +22,28 @@ export default async function handler(req, res) {
   }
 
   try {
-    const dataFile = path.join(process.cwd(), 'data', 'screenshots.json');
+    console.log('Fetching screenshots from Cloudinary...');
 
-    let screenshots = [];
+    // Get all resources from the portfolio-screenshots folder
+    const result = await cloudinary.api.resources({
+      type: 'upload',
+      prefix: 'portfolio-screenshots/',
+      max_results: 100,
+    });
 
-    // Check if data file exists
-    if (fs.existsSync(dataFile)) {
-      try {
-        screenshots = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
-      } catch (e) {
-        console.error('Error reading screenshots data:', e);
-        screenshots = [];
-      }
-    }
+    console.log('Found Cloudinary resources:', result.resources.length);
+
+    // Convert Cloudinary resources to our screenshot format
+    const screenshots = result.resources.map(resource => ({
+      id: resource.public_id,
+      title: resource.context?.custom?.title || 'Untitled',
+      description: resource.context?.custom?.description || '',
+      url: resource.secure_url,
+      thumbnail: resource.secure_url.replace('/upload/', '/upload/w_400,h_300,c_fill/'),
+      date: resource.created_at,
+      cloudinary_id: resource.public_id,
+      pinned: resource.context?.custom?.pinned === 'true' || false,
+    }));
 
     // Sort screenshots: pinned first, then by date (newest first)
     screenshots.sort((a, b) => {
@@ -39,6 +54,8 @@ export default async function handler(req, res) {
       // Then by date
       return new Date(b.date) - new Date(a.date);
     });
+
+    console.log('Returning screenshots:', screenshots.length);
 
     res.status(200).json({
       success: true,

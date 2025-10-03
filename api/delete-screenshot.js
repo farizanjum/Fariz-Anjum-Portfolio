@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
@@ -30,42 +28,10 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Screenshot ID is required' });
     }
 
-    const dataFile = path.join(process.cwd(), 'data', 'screenshots.json');
-
-    let screenshots = [];
-
-    // Read existing data
-    if (fs.existsSync(dataFile)) {
-      try {
-        screenshots = JSON.parse(fs.readFileSync(dataFile, 'utf8'));
-      } catch (e) {
-        return res.status(500).json({ error: 'Failed to read data file' });
-      }
-    }
-
-    // Find the screenshot
-    const index = screenshots.findIndex(s => s.id === id);
-    if (index === -1) {
-      return res.status(404).json({ error: 'Screenshot not found' });
-    }
-
-    const screenshot = screenshots[index];
+    console.log('Deleting screenshot from Cloudinary:', id);
 
     // Delete from Cloudinary
-    try {
-      if (screenshot.cloudinary_id) {
-        await cloudinary.uploader.destroy(screenshot.cloudinary_id);
-      }
-    } catch (cloudinaryError) {
-      console.warn('Failed to delete from Cloudinary:', cloudinaryError);
-      // Continue with local deletion even if Cloudinary fails
-    }
-
-    // Remove from array
-    screenshots.splice(index, 1);
-
-    // Write back to file
-    fs.writeFileSync(dataFile, JSON.stringify(screenshots, null, 2));
+    await cloudinary.uploader.destroy(id);
 
     res.status(200).json({
       success: true,
