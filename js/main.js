@@ -10,11 +10,23 @@ async function loadNewsletterFeed() {
 
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
-        const items = Array.from(xmlDoc.querySelectorAll('item')).slice(0, 5).map((item) => ({
-            title: item.querySelector('title')?.textContent || 'Untitled',
-            link: item.querySelector('link')?.textContent || '#',
-            pubDate: item.querySelector('pubDate')?.textContent || ''
-        }));
+
+        // Support RSS (item) and Atom (entry)
+        let nodes = Array.from(xmlDoc.querySelectorAll('item'));
+        if (nodes.length === 0) {
+            nodes = Array.from(xmlDoc.querySelectorAll('entry'));
+        }
+
+        const items = nodes.slice(0, 5).map((node) => {
+            const title = node.querySelector('title')?.textContent || 'Untitled';
+            const linkEl = node.querySelector('link');
+            let link = '#';
+            if (linkEl) {
+                link = linkEl.getAttribute('href') || linkEl.textContent || '#';
+            }
+            const pubDate = node.querySelector('pubDate, updated, published')?.textContent || '';
+            return { title, link, pubDate };
+        });
 
         displayNewsletterItems(items);
     } catch (error) {
