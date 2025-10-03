@@ -1,6 +1,6 @@
 # Fariz Anjum - Portfolio
 
-A clean, black and white portfolio website built for both normal web and Tor hosting.
+A clean, black and white portfolio website built for modern web hosting.
 
 ## Features
 
@@ -13,17 +13,36 @@ A clean, black and white portfolio website built for both normal web and Tor hos
 ## Tech Stack
 
 - HTML5
-- CSS3 (Custom styles)
+- CSS3 (Inline styles)
 - JavaScript (Vanilla)
 - RSS2JSON API for newsletter feed
 
+## Project Structure
+
+```
+fariz.tech/
+├── index.html          # Main portfolio page
+├── js/main.js          # Newsletter RSS loader
+├── images/             # Profile image
+├── vercel.json         # Vercel deployment config
+├── _redirects          # Netlify deployment config
+├── .gitignore          # Git ignore rules
+└── README.md           # This file
+```
+
 ## Deployment
 
-### Normal Web (fariz.tech)
-This site is optimized for static hosting platforms like Vercel, Netlify, or Cloudflare Pages.
+This site is optimized for static hosting platforms:
 
-### Tor (.onion)
-Future deployment planned for Tor hidden service.
+### Vercel (Recommended)
+1. Import from GitHub
+2. Auto-deploys on push
+3. Add custom domain `fariz.tech`
+
+### Netlify
+1. Connect GitHub repo
+2. Auto-deploys on push
+3. Add custom domain `fariz.tech`
 
 ## Development
 
