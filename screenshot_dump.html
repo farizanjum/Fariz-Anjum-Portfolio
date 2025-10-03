@@ -273,6 +273,139 @@
             color: #fff;
             border-color: #666;
         }
+        /* Lightbox/Modal for full-size images */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .lightbox.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 10px;
+        }
+        .lightbox-info {
+            position: absolute;
+            bottom: -60px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #fff;
+        }
+
+        /* Edit and Pin buttons */
+        .edit-btn, .pin-btn {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+            z-index: 10;
+        }
+        .admin-active .edit-btn {
+            display: block;
+            top: 30px;
+            right: 30px;
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+        }
+        .admin-active .pin-btn {
+            display: block;
+            top: 5px;
+            left: 5px;
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+        }
+        .pinned {
+            border: 3px solid #f1c40f !important;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.3) !important;
+        }
+
+        /* Edit modal */
+        .edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .edit-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .edit-content {
+            background: #111;
+            border: 1px solid #ff6b6b;
+            border-radius: 8px;
+            padding: 25px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .edit-title {
+            color: #ff6b6b;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .edit-form .form-group {
+            margin-bottom: 15px;
+        }
+        .edit-form .form-input {
+            width: 100%;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .edit-form .form-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 15px;
@@ -287,6 +420,17 @@
             }
             .h1 {
                 font-size: 2rem;
+            }
+            .lightbox-content {
+                max-width: 95vw;
+                max-height: 95vh;
+            }
+            .lightbox-close {
+                top: -35px;
+                font-size: 24px;
+            }
+            .lightbox-info {
+                bottom: -50px;
             }
         }
     </style>
@@ -360,6 +504,37 @@
         </div>
     </div>
 
+    <!-- Lightbox for full-size images -->
+    <div id="lightbox" class="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" onclick="closeLightbox()">×</button>
+            <img id="lightbox-img" class="lightbox-img" src="" alt="">
+            <div id="lightbox-info" class="lightbox-info"></div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="edit-modal">
+        <div class="edit-content">
+            <div class="edit-title">✏️ Edit Screenshot</div>
+            <form class="edit-form" onsubmit="saveEdit(event)">
+                <input type="hidden" id="edit-screenshot-id">
+                <div class="form-group">
+                    <label class="form-label">Title:</label>
+                    <input type="text" id="edit-title" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description:</label>
+                    <textarea id="edit-desc" class="form-input" rows="3"></textarea>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" class="upload-btn" style="margin-right: 10px;">Save Changes</button>
+                    <button type="button" onclick="closeEditModal()" style="background: #666; color: #ccc;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         let isAdmin = false;
         let adminSequence = [];
@@ -374,7 +549,7 @@
             window.location.href = 'index.html';
         }
 
-        // Secret key combination to access admin panel (Konami code: ↑↑↓↓←→←→SEX)
+        // Secret key combination to access admin panel
         document.addEventListener('keydown', function(e) {
             adminSequence.push(e.code);
             if (adminSequence.length > adminCode.length) {
@@ -524,11 +699,13 @@
         function addScreenshotToGrid(screenshot) {
             const grid = document.getElementById('screenshots-grid');
             const item = document.createElement('div');
-            item.className = 'screenshot-item';
+            item.className = 'screenshot-item' + (screenshot.pinned ? ' pinned' : '');
             item.setAttribute('data-id', screenshot.id);
             item.innerHTML = `
                 <button class="delete-btn" onclick="deleteScreenshot('${screenshot.id}')" title="Delete screenshot">×</button>
-                <img src="${screenshot.url}" alt="${screenshot.title}" class="screenshot-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <button class="edit-btn" onclick="editScreenshot('${screenshot.id}')" title="Edit screenshot">✏️</button>
+                <button class="pin-btn" onclick="togglePin('${screenshot.id}')" title="Pin/Unpin screenshot">${screenshot.pinned ? '📌' : '📍'}</button>
+                <img src="${screenshot.url}" alt="${screenshot.title}" class="screenshot-img" onclick="openLightbox('${screenshot.url}', '${screenshot.title}', '${screenshot.desc}')" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <div style="width: 100%; height: 200px; background: #222; display: none; align-items: center; justify-content: center; color: #666;">
                     📸 ${screenshot.title}
                 </div>
@@ -561,18 +738,119 @@
             alert('Screenshot deleted successfully!');
         }
 
+        // Lightbox functionality
+        function openLightbox(src, title, desc) {
+            const lightbox = document.getElementById('lightbox');
+            const img = document.getElementById('lightbox-img');
+            const info = document.getElementById('lightbox-info');
+
+            img.src = src;
+            img.alt = title;
+            info.innerHTML = `<strong>${title}</strong>${desc ? '<br>' + desc : ''}`;
+
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close lightbox on background click
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLightbox();
+            }
+        });
+
+        // Edit functionality
+        function editScreenshot(id) {
+            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
+            const screenshot = screenshots.find(s => s.id === id);
+
+            if (screenshot) {
+                document.getElementById('edit-screenshot-id').value = id;
+                document.getElementById('edit-title').value = screenshot.title;
+                document.getElementById('edit-desc').value = screenshot.desc || '';
+
+                document.getElementById('edit-modal').classList.add('active');
+            }
+        }
+
+        function saveEdit(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('edit-screenshot-id').value;
+            const newTitle = document.getElementById('edit-title').value;
+            const newDesc = document.getElementById('edit-desc').value;
+
+            // Update in localStorage
+            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
+            const index = screenshots.findIndex(s => s.id === id);
+
+            if (index !== -1) {
+                screenshots[index].title = newTitle;
+                screenshots[index].desc = newDesc;
+                localStorage.setItem('screenshots', JSON.stringify(screenshots));
+
+                // Update the DOM
+                const item = document.querySelector(`[data-id="${id}"]`);
+                if (item) {
+                    item.querySelector('.screenshot-title').textContent = newTitle;
+                    item.querySelector('.screenshot-desc').textContent = newDesc;
+                }
+
+                closeEditModal();
+                alert('Screenshot updated successfully!');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+        }
+
+        // Pin functionality
+        function togglePin(id) {
+            const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
+            const index = screenshots.findIndex(s => s.id === id);
+
+            if (index !== -1) {
+                screenshots[index].pinned = !screenshots[index].pinned;
+                localStorage.setItem('screenshots', JSON.stringify(screenshots));
+
+                // Update the DOM
+                const item = document.querySelector(`[data-id="${id}"]`);
+                const pinBtn = item.querySelector('.pin-btn');
+
+                if (screenshots[index].pinned) {
+                    item.classList.add('pinned');
+                    pinBtn.textContent = '📌';
+                    pinBtn.title = 'Unpin screenshot';
+                } else {
+                    item.classList.remove('pinned');
+                    pinBtn.textContent = '📍';
+                    pinBtn.title = 'Pin screenshot';
+                }
+
+                alert(screenshots[index].pinned ? 'Screenshot pinned!' : 'Screenshot unpinned!');
+            }
+        }
+
         // Load saved screenshots on page load
         document.addEventListener('DOMContentLoaded', function() {
             const screenshots = JSON.parse(localStorage.getItem('screenshots') || '[]');
 
-            // Add IDs to existing screenshots if they don't have them
+            // Add IDs and pinned status to existing screenshots if they don't have them
             const updatedScreenshots = screenshots.map(screenshot => ({
                 ...screenshot,
-                id: screenshot.id || Date.now().toString() + Math.random().toString(36).substr(2, 9)
+                id: screenshot.id || Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                pinned: screenshot.pinned || false
             }));
 
-            // Save back if any IDs were added
-            if (updatedScreenshots.some((s, i) => s.id !== screenshots[i]?.id)) {
+            // Save back if any IDs or pinned status were added
+            if (updatedScreenshots.some((s, i) => s.id !== screenshots[i]?.id || s.pinned !== screenshots[i]?.pinned)) {
                 localStorage.setItem('screenshots', JSON.stringify(updatedScreenshots));
             }
 
