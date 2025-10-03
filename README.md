@@ -8,7 +8,7 @@ A clean, black and white portfolio website built for modern web hosting with an 
 - Tor-compatible fonts
 - RSS feed integration for newsletter
 - **Screenshot Dump Section** with NSFW content warning
-- **Admin Panel** with secure access protection (Konami code: ↑↑↓↓←→←→SEX)
+- **Admin Panel** with secure access protection
 - **Drag & Drop** multi-image upload to Cloudinary
 - **Image Lightbox** for full-size viewing
 - **Edit Title & Description** after upload (emoji support ✨)
@@ -65,21 +65,7 @@ fariz.tech/
 
 ### 2. Deployment
 
-This site is optimized for static hosting platforms with serverless functions:
-
-#### Vercel (Recommended)
-1. Import from GitHub
-2. Add Cloudinary environment variables in project settings
-3. Auto-deploys on push
-4. Add custom domain `fariz.tech`
-5. Serverless functions auto-detect and deploy
-
-#### Netlify
-1. Connect GitHub repo
-2. Add Cloudinary environment variables in build settings
-3. Auto-deploys on push
-4. Add custom domain `fariz.tech`
-5. Functions will be available at `/.netlify/functions/`
+This site is optimized for static hosting platforms with serverless functions
 
 ## Key Features
 
@@ -118,20 +104,11 @@ python -m http.server 8000
 Then visit `http://localhost:8000`
 
 ## Usage
-
-### For Visitors:
 1. Browse the portfolio normally
 2. Visit "Screenshot Dumps" section
 3. Accept NSFW warning to view collection
 4. Click any image to view full-size in lightbox
 
-### For Admin (You):
-1. Go to `https://fariz.tech/screenshot_dump.html`
-2. Use the secure access method to unlock admin panel
-3. Drag & drop images or click to select
-4. Edit titles/descriptions of existing screenshots
-5. Pin important screenshots with the pin button
-6. Delete screenshots with the × button
 
 ## Security
 
