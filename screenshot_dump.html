@@ -121,8 +121,8 @@
         .screenshot-img {
             width: auto;
             height: auto;
-            max-width: 400px;
-            max-height: 600px;
+            max-width: 500px;
+            max-height: 700px;
             object-fit: contain;
             display: block;
             border-radius: 0;
@@ -738,13 +738,10 @@
                 <button class="delete-btn" onclick="deleteScreenshot('${screenshot.id}')" title="Delete screenshot">×</button>
                 <button class="edit-btn" onclick="editScreenshot('${screenshot.id}')" title="Edit screenshot">✏️</button>
                 <button class="pin-btn" onclick="togglePin('${screenshot.id}')" title="Pin/Unpin screenshot">${screenshot.pinned ? '📌' : '📍'}</button>
-                <img src="${screenshot.thumbnail || screenshot.url}" alt="${screenshot.title}" class="screenshot-img" onclick="openLightbox('${screenshot.url}', '${escapedTitle}', '${escapedDesc}')" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div style="width: 100%; height: 200px; background: #222; display: none; align-items: center; justify-content: center; color: #666;">
-                    📸 ${screenshot.title}
-                </div>
+                <img src="${screenshot.thumbnail || screenshot.url}" alt="${screenshot.title}" class="screenshot-img" onclick="openLightbox('${screenshot.url}', '${escapedTitle}', '${escapedDesc}')" onerror="this.style.display='none';">
                 <div class="screenshot-info">
-                    <div class="screenshot-title">${screenshot.title}</div>
-                    <div class="screenshot-desc">${screenshot.description || screenshot.desc || ''}</div>
+                    ${screenshot.title && screenshot.title !== 'Untitled' ? `<div class="screenshot-title">${screenshot.title}</div>` : ''}
+                    ${screenshot.description && screenshot.description !== '' ? `<div class="screenshot-desc">${screenshot.description}</div>` : ''}
                 </div>
             `;
             grid.appendChild(item);
@@ -871,9 +868,13 @@
         // Pin functionality
         async function togglePin(id) {
             try {
-                // Get current state to determine new state
-                const item = document.querySelector(`[data-id="${id}"]`);
-                const currentlyPinned = item.classList.contains('pinned');
+                // Get current state from the screenshots array
+                const screenshot = currentScreenshots.find(s => s.id === id);
+                if (!screenshot) {
+                    alert('Screenshot not found!');
+                    return;
+                }
+                const currentlyPinned = screenshot.pinned || false;
                 const newPinnedState = !currentlyPinned;
 
                 const response = await fetch('/api/update-screenshot', {
