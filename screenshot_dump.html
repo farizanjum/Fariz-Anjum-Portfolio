@@ -879,8 +879,13 @@
                     currentScreenshots[screenshotIndex].description = newDesc;
                 }
 
-                // Refresh the grid
+                // Refresh the grid immediately for UI feedback
                 refreshScreenshotsGrid();
+
+                // Also reload from server after a short delay to ensure persistence
+                setTimeout(() => {
+                    loadScreenshots();
+                }, 1000);
 
                 closeEditModal();
                 alert('Screenshot updated successfully!');
@@ -929,8 +934,13 @@
                     currentScreenshots[screenshotIndex].pinned = newPinnedState;
                 }
 
-                // Refresh the grid to apply sorting
+                // Refresh the grid to apply sorting immediately
                 refreshScreenshotsGrid();
+
+                // Also reload from server after a short delay to ensure persistence
+                setTimeout(() => {
+                    loadScreenshots();
+                }, 1000);
 
                 alert(newPinnedState ? 'Screenshot pinned!' : 'Screenshot unpinned!');
             } catch (error) {

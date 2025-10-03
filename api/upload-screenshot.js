@@ -50,13 +50,14 @@ export default async function handler(req, res) {
       // Optimize for web
       quality: 'auto',
       format: 'auto',
-      // Store metadata in context
+      // Store metadata in context and tags
       context: {
         title: title || 'Untitled',
         description: description || '',
         date: new Date().toISOString(),
         pinned: 'false',
       },
+      tags: [`title:${title || 'Untitled'}`, `description:${description || ''}`, `pinned:false`],
     });
     console.log('Cloudinary upload successful:', result.public_id);
 

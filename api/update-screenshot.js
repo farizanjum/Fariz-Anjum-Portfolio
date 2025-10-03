@@ -49,21 +49,30 @@ export default async function handler(req, res) {
 
     console.log('New context:', contextUpdates);
 
-    // Update the resource context in Cloudinary using explicit method
+    // Update both context and tags in Cloudinary
     console.log('Updating Cloudinary with context:', contextUpdates);
-    try {
-      const updateResult = await cloudinary.uploader.explicit(id, {
-        type: 'upload',
-        context: contextUpdates,
-      });
-      console.log('Cloudinary update result:', updateResult);
-    } catch (explicitError) {
-      console.log('Explicit method failed, trying update method:', explicitError.message);
-      // Fallback to update method
-      await cloudinary.api.update(id, {
-        context: contextUpdates,
-      });
-      console.log('Used update method as fallback');
+
+    // Update context
+    const contextResult = await cloudinary.api.update(id, {
+      context: contextUpdates,
+    });
+    console.log('Context update result:', contextResult);
+
+    // Also update tags for redundancy
+    const tagUpdates = [];
+    if (title !== undefined) tagUpdates.push(`title:${title}`);
+    if (description !== undefined) tagUpdates.push(`description:${description}`);
+    if (pinned !== undefined) tagUpdates.push(`pinned:${pinned}`);
+
+    if (tagUpdates.length > 0) {
+      try {
+        const tagResult = await cloudinary.api.update(id, {
+          tags: tagUpdates,
+        });
+        console.log('Tag update result:', tagResult);
+      } catch (tagError) {
+        console.log('Tag update failed:', tagError.message);
+      }
     }
 
     // Verify the update by fetching the resource

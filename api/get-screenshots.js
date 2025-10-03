@@ -36,15 +36,40 @@ export default async function handler(req, res) {
     // Convert Cloudinary resources to our screenshot format
     const screenshots = result.resources.map(resource => {
       console.log('Resource context for', resource.public_id, ':', resource.context);
+      console.log('Resource tags for', resource.public_id, ':', resource.tags);
+
+      // Try to get data from context first, then fall back to tags
+      let title = resource.context?.title || 'Untitled';
+      let description = resource.context?.description || '';
+      let pinned = resource.context?.pinned === 'true' || false;
+
+      // If context is empty, try parsing from tags
+      if (resource.tags && resource.tags.length > 0) {
+        resource.tags.forEach(tag => {
+          if (tag.startsWith('title:')) {
+            const tagTitle = tag.substring(6);
+            if (tagTitle && title === 'Untitled') title = tagTitle;
+          }
+          if (tag.startsWith('description:')) {
+            const tagDesc = tag.substring(12);
+            if (tagDesc && !description) description = tagDesc;
+          }
+          if (tag.startsWith('pinned:')) {
+            const tagPinned = tag.substring(7);
+            if (tagPinned && !resource.context?.pinned) pinned = tagPinned === 'true';
+          }
+        });
+      }
+
       return {
         id: resource.public_id,
-        title: resource.context?.title || 'Untitled',
-        description: resource.context?.description || '',
+        title: title,
+        description: description,
         url: resource.secure_url,
         thumbnail: resource.secure_url.replace('/upload/', '/upload/w_400,h_300,c_fill/'),
         date: resource.created_at,
         cloudinary_id: resource.public_id,
-        pinned: resource.context?.pinned === 'true' || false,
+        pinned: pinned,
       };
     });
 
