@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fariz Anjum</title>
-    <meta name="description" content="Fariz Anjum - AI Engineer, self-taught developer, writer, and creator from Azamgarh, India. Portfolio hosted on Tor network.">
+    <meta name="description" content="Fariz Anjum - AI Engineer, self-taught developer, writer, and creator from Azamgarh, India.">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <style>
         body {
@@ -14,40 +14,35 @@
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            min-height: 100vh;
         }
         .container {
             max-width: 900px;
             margin: 0 auto;
-            padding-right: 100px; /* Space for desktop sidebar */
         }
         .header {
             display: flex;
             align-items: flex-start;
-            gap: 30px;
-            margin-bottom: 50px;
-            padding: 20px 0;
+            gap: 20px;
+            margin-bottom: 40px;
         }
         .profile-img {
-            width: 220px;
+            width: 200px;
             height: auto;
             flex-shrink: 0;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
         }
         .header-content {
             flex: 1;
         }
         .h1 {
             font-size: 2.5rem;
-            font-weight: 700;
+            font-weight: bold;
             margin-bottom: 20px;
         }
         .h2 {
             font-size: 2rem;
-            font-weight: 600;
-            margin-top: 50px;
-            margin-bottom: 25px;
+            font-weight: bold;
+            margin-top: 40px;
+            margin-bottom: 20px;
             border-bottom: 2px solid #fff;
             padding-bottom: 10px;
         }
@@ -101,8 +96,7 @@
             right: 20px;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
+            background: #000;
             border: 1px solid #fff;
             border-radius: 8px;
             padding: 15px 10px;
@@ -110,7 +104,6 @@
             flex-direction: column;
             gap: 10px;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
         }
 
         .nav-link {
@@ -119,16 +112,13 @@
             font-size: 14px;
             padding: 8px 12px;
             border-radius: 4px;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease;
             text-align: center;
             min-width: 70px;
-            display: block;
-            font-weight: 500;
         }
 
         .nav-link:hover {
             background-color: rgba(255, 255, 255, 0.1);
-            transform: translateX(-2px);
         }
 
         @media (min-width: 769px) {
@@ -145,134 +135,150 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                background: rgba(0, 0, 0, 0.95);
-                backdrop-filter: blur(10px);
+                background: #000;
                 border-top: 1px solid #fff;
                 padding: 12px 0;
-                display: flex !important;
+                display: flex;
                 justify-content: space-around;
                 z-index: 1000;
-                box-shadow: 0 -2px 10px rgba(255, 255, 255, 0.1);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
             }
 
             .mobile-nav-link {
                 color: #fff;
                 text-decoration: none;
-                font-size: 12px;
+                font-size: 11px;
                 text-align: center;
-                padding: 8px 10px;
+                padding: 6px 8px;
                 border-radius: 6px;
-                transition: all 0.3s ease;
-                min-width: 60px;
-                font-weight: 500;
+                transition: background-color 0.3s ease;
+                min-width: 50px;
             }
 
             .mobile-nav-link:hover {
                 background-color: rgba(255, 255, 255, 0.1);
-                transform: translateY(-2px);
             }
 
             /* Mobile optimizations */
             body {
-                padding: 20px 15px 100px; /* Adjusted padding for mobile */
+                padding: 30px 20px 100px; /* More padding on mobile, extra bottom for nav */
                 line-height: 1.7; /* Better line height */
             }
 
             .container {
                 max-width: 100%; /* Full width on mobile */
-                padding-right: 0; /* Remove sidebar padding on mobile */
             }
 
             .header {
                 flex-direction: column; /* Stack image and text vertically */
-                gap: 30px; /* More gap between image and text */
+                gap: 25px; /* More gap between image and text */
                 margin-bottom: 50px; /* More bottom margin */
                 text-align: center; /* Center align header text */
-                padding: 0 10px;
             }
 
             .profile-img {
-                width: 180px; /* Slightly larger image on mobile */
+                width: 150px; /* Smaller image on mobile */
                 height: auto;
-                border-radius: 8px;
-                box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
             }
 
             .header-content {
-                text-align: center; /* Center text on mobile for better readability */
+                text-align: left; /* Keep text left-aligned */
                 max-width: 100%; /* Full width */
-                padding: 0 10px;
             }
 
             .h1 {
-                font-size: 2.0rem; /* Better size for mobile */
-                margin-bottom: 20px;
+                font-size: 2.2rem; /* Slightly smaller title on mobile */
+                margin-bottom: 25px;
                 line-height: 1.2;
-                font-weight: 700;
             }
 
             .text {
-                margin-bottom: 18px; /* More spacing between paragraphs */
-                font-size: 1.0rem; /* Slightly larger font for readability */
-                line-height: 1.7;
-                text-align: left; /* Left align body text for readability */
-                padding: 0 5px;
+                margin-bottom: 20px; /* More spacing between paragraphs */
+                font-size: 1.1rem; /* Slightly larger font for readability */
             }
 
             .h2 {
-                font-size: 1.6rem; /* Adjust section headers */
-                margin-top: 45px; /* More top margin for sections */
-                margin-bottom: 20px; /* More bottom margin */
-                padding: 0 5px;
-                font-weight: 600;
+                font-size: 1.8rem; /* Adjust section headers */
+                margin-top: 50px; /* More top margin for sections */
+                margin-bottom: 25px; /* More bottom margin */
             }
 
             .h3 {
-                font-size: 1.3rem;
-                margin-top: 30px;
-                margin-bottom: 15px;
-                font-weight: 600;
+                font-size: 1.4rem;
+                margin-top: 35px;
+                margin-bottom: 20px;
             }
 
             .bullet-list {
-                margin-left: 20px; /* Keep some indent on mobile */
+                margin-left: 15px; /* Less indent on mobile */
                 margin-bottom: 20px;
-                padding: 0 5px;
             }
 
             .bullet-item {
-                margin-bottom: 15px; /* More space between bullets */
+                margin-bottom: 12px; /* More space between bullets */
                 line-height: 1.6;
-                font-size: 1.0rem;
             }
 
             .numbered-list {
-                margin-left: 20px;
+                margin-left: 15px;
                 margin-bottom: 25px; /* More space after lists */
-                padding: 0 5px;
             }
 
             .numbered-item {
-                margin-bottom: 20px; /* More space between items */
+                margin-bottom: 18px; /* More space between items */
                 line-height: 1.6;
-                font-size: 1.0rem;
-                padding-bottom: 10px; /* Extra breathing room */
+                font-size: 1.05rem;
+                padding-bottom: 8px; /* Extra breathing room */
+            }
+
+            .blog-feed {
+                padding: 20px; /* More padding */
+            }
+
+            .blog-item {
+                margin-bottom: 18px;
+                padding-bottom: 12px;
             }
 
             /* Better spacing for social links */
             .text:last-child {
-                margin-top: 25px;
-                padding-top: 25px;
+                margin-top: 20px;
+                padding-top: 20px;
                 border-top: 1px solid #333; /* Subtle separator */
-                margin-bottom: 30px; /* Extra bottom margin for mobile nav */
             }
         }
 
+        .blog-feed {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            padding: 15px;
+            background: #111;
+        }
+        .blog-item {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+        }
+        .blog-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .blog-date {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
         .italic {
             font-style: italic;
         }
         .bold {
             font-weight: bold;
+        }
+        .scroll-to-blogs {
+            cursor: pointer;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -304,9 +310,10 @@
                     Currently an <span class="bold">AI Engineer at <a href="https://varnan.tech">Varnan</a></span>.<br>
                     Previously interned at <a href="https://dyneresearch.com">Dyne Research</a>.<br>
                     <span class="italic">Dropped out of NYU at 18</span> and <span class="italic">completed a Minor in AI/ML from IIT Ropar</span>.
-                </div>
+            </div>
                 <div class="text">
                     I'm mostly self-taught, the kind of person you'll find on a laptop or phone, falling into internet rabbit holes, juggling AI tools, building things, or gaming. Favorite game: <span class="bold"><a href="https://cyberpunk.fandom.com/wiki/Cyberpunk_2077">Cyberpunk 2077</a></span>. I'm fascinated by <a href="https://cyberpunk.fandom.com/wiki/Cyberpunk_2077_Cyberware">Cyberware</a>, Neuralink-style futures.
+                </div>
             </div>
         </div>
 
@@ -319,13 +326,12 @@
                     <div class="bullet-item pointer">• Work across <span class="bold">LangChain, N8n, Make.com, custom LLMs, vector DBs, cloud infra</span>.</div>
                     <div class="bullet-item pointer">• Built a <span class="bold">viral meme automation</span> → fresh YT channel hit 25k+ views and 1k+ site visits (<a href="https://www.instagram.com/p/DNS5lJTRzZ8/">example</a>).</div>
                     <div class="bullet-item pointer">• Automated the full <span class="bold">video pipeline for <a href="https://www.instagram.com/parasmadan.in/">Paras Madan</a></span>.</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="numbered-item" style="margin-bottom: 20px;"><strong style="font-size: 1.3em;">2. Writing & Newsletter</strong><br>
+            <div class="numbered-item" style="margin-bottom: 20px;"><strong style="font-size: 1.3em;">2. Writing</strong><br>
                 <div class="bullet-list" style="margin-left: 20px; margin-top: 5px;">
                     <div class="bullet-item pointer">• Write technical blogs for <a href="https://varnan.tech/blog">Varnan</a>.</div>
-                    <div class="bullet-item pointer">• Publish a weekly newsletter: <span class="bold"><a href="https://distributionlayer.beehiiv.com/">The Distribution Layer</a></span>.</div>
                     <div class="bullet-item pointer">• Books:</div>
                     <div class="numbered-list" style="margin-left: 20px; margin-top: 5px;">
                         <div class="numbered-item">1. <a href="https://notionpress.com/in/read/surrendering-to-mediocrity">Surrendering to Mediocrity</a></div>
@@ -337,9 +343,9 @@
                         <div class="numbered-item">2. <a href="https://varnan.tech/blog/100x-ux-research-ai-agent-finding-why-products-fail-using-reddit-and-hacker-news">100x UX Research Agent</a></div>
                         <div class="numbered-item">3. <a href="https://varnan.tech/blog/generate-viral-meme-videos-for-your-business-using-nocode-ai-agents">Generate Viral Meme Videos</a></div>
                         <div class="numbered-item">4. <a href="https://medium.com/@farizanjum2018/openai-unpacked-a-framework-driven-analysis-of-ais-future-274697f56066">OpenAI Unpacked</a></div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
             <div class="numbered-item" style="margin-bottom: 20px;"><strong style="font-size: 1.3em;">3. Design & Growth</strong><br>
                 <div class="bullet-list" style="margin-left: 20px; margin-top: 5px;">
@@ -347,8 +353,8 @@
                     <div class="bullet-item pointer">• Built gaming YT channel assets, worked with YouTubers (50k–200k subs).</div>
                     <div class="bullet-item pointer">• Grew <a href="https://www.instagram.com/scene.booking/">Scene Booking's Instagram</a> <span class="bold">0 → 10k</span> during internship.</div>
                     <div class="bullet-item pointer">• Growth wins: <a href="https://www.instagram.com/parasmadan.in/">Paras Madan</a> <span class="bold">1.1M YT views & 5.6k subs in 20 days</span>; a video that hit <span class="bold">750k+ views</span>; Reddit posts with <span class="bold">250k+ views & 4 leads</span>.</div>
+                    </div>
                 </div>
-            </div>
 
             <div class="numbered-item" style="margin-bottom: 20px;"><strong style="font-size: 1.3em;">4. Gaming</strong><br>
                 <div class="bullet-list" style="margin-left: 20px; margin-top: 5px;">
@@ -356,24 +362,25 @@
                     <div class="bullet-item pointer">• Completed dozens of story-driven games (Cyberpunk, Stray, Black Myth Wukong, Sekiro 100% achievements except last boss).</div>
                     <div class="bullet-item pointer">• Competitive past: PUBGM Lite tourneys, CODM; GTA mods nostalgia (<span class="italic">GTA Punjab with Honey Singh radio 😅</span>).</div>
                     <div class="bullet-item pointer">• Used to mod/"hack" games with Lucky Patcher.</div>
+                    </div>
                 </div>
-            </div>
 
             <div class="numbered-item" style="margin-bottom: 20px;"><strong style="font-size: 1.3em;">5. Fellowships & Research</strong><br>
                 <div class="bullet-list" style="margin-left: 20px; margin-top: 5px;">
-                    <div class="bullet-item pointer">• <span class="bold"><a href="https://www.roote.co/">Roote Fellowship</a></span> (mentors: <a href="https://www.rhyslindmark.com/about-me/">Rhys Lindmark</a>) → had a chance to talk with <a href="https://maggieappleton.com/">Maggie Appleton</a> → learned <a href="https://theinformed.life/2023/07/16/episode-118-maggie-appleton/">digital gardening</a> (Here, i am doing of my Own)</div>
+                    <div class="bullet-item pointer">• <span class="bold"><a href="https://www.roote.co/">Roote Fellowship</a></span> (mentors: <a href="https://www.rhyslindmark.com/about-me/">Rhys Lindmark</a>) → had a chance to talk with <a href="https://maggieappleton.com/">Maggie Appleton</a> → learned <a href="https://theinformed.life/2023/07/16/episode-118-maggie-appleton/">digital gardening</a> (Here, i am doing of my Own)
                     <div class="bullet-item pointer">• <span class="bold">Dyne Research</span> → Legal AI Assistant, RAG, embeddings, LangChain, multilingual models, AWS startup grant.</div>
                     <div class="bullet-item pointer">• <span class="bold">Stanford Code in Place</span> (selected from 80k) → AI talk with Andrew Ng & Chelsea Finn.</div>
                     <div class="bullet-item pointer">• <span class="bold">Google & IBM Quantum AI Scholarships</span> → studied quantum mechanics, built quantum circuits, toured Google Quantum AI Labs.</div>
+                    </div>
                 </div>
-            </div>
 
             <div class="numbered-item" style="margin-bottom: 20px;"><strong style="font-size: 1.3em;">6. Volunteering</strong><br>
                 <div class="bullet-list" style="margin-left: 20px; margin-top: 5px;">
                     <div class="bullet-item pointer">• Graphic design for <span class="bold">Parchhai Foundation</span> (education campaigns).</div>
                     <div class="bullet-item pointer">• Co-ran <span class="italic">Deen Dialogue</span> (Islamic content on Instagram).</div>
+                    </div>
+                    </div>
                 </div>
-            </div>
 
         <div id="projects" class="h2">Projects</div>
 
@@ -401,6 +408,7 @@
             <div class="bullet-item pointer">• Only person from my district to reach Top-50 global univs.</div>
         </div>
 
+
         <div id="social" class="h2">Socials & Contact</div>
         <div class="text">
             <a href="https://www.linkedin.com/in/farizanjum">LinkedIn</a> |
@@ -409,7 +417,7 @@
             <a href="https://www.reddit.com/user/Ok-Literature-9189">Reddit</a> |
             <a href="https://medium.com/@farizanjum2018">Medium</a> |
             <a href="https://www.instagram.com/farizanjum">Instagram</a>
-        </div>
+            </div>
         <div class="text">
             Email: <a href="mailto:24082147@scale.iitrpr.ac.in">24082147@scale.iitrpr.ac.in</a> | <a href="mailto:works.farizanjum@gmail.com">works.farizanjum@gmail.com</a>
         </div>
